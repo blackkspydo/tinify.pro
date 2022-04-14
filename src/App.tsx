@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import Compressor from "compressorjs";
-
+import { ComparisonSlider } from "react-comparison-slider";
 import styles from "./App.module.scss";
 
 interface BlobObjInterface {
@@ -16,9 +16,18 @@ interface ImagesInterface {
 function App() {
 	const [images, setImages] = useState<ImagesInterface[]>([]);
 	const [blobs, setBlobs] = useState<BlobObjInterface[]>([]);
+	const [compare, setCompare] = useState<ImagesInterface | null>(null);
 	const [isHovering, setIsHovering] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	console.log(blobs);
+
+	const nameShorter = (name: string) => {
+		if (name.length > 20) {
+			return name.substring(0, 20) + "...";
+		}
+		return name;
+	};
+
 	const handleImageCompression = async () => {
 		if (blobs) {
 			blobs.forEach((image) => {
@@ -47,6 +56,16 @@ function App() {
 					maxHeight: 700,
 					mimeType: "image/jpeg",
 					convertSize: 500000,
+					checkOrientation: true,
+					convertTypes: [
+						"image/jpeg",
+						"image/png",
+						"image/webp",
+						"image/bmp",
+						"image/gif",
+						"image/svg+xml",
+						"image/tiff",
+					],
 				});
 			});
 		}
@@ -59,32 +78,32 @@ function App() {
 
 	const imgHTML = images.map((image) => {
 		return (
-			<div className={styles.imageContainer}>
-				<div className={styles.compressed}>
-					<div>compressed</div>
-					<img
-						src={image.compressed.url}
-						alt={image.compressed.name}
-					/>
-					<div className={styles.imageInfo}>
-						<div className={styles.imageName}>
-							{image.compressed.name}
-						</div>
-						<div className={styles.imageSize}>
-							{Number(image.compressed.size) / 1000}kb
-						</div>
+			<div className={styles.compressed}>
+				<img
+					onClick={() => {
+						setCompare(image);
+						console.log("first");
+					}}
+					src={image.compressed.url}
+					alt={image.compressed.name}
+				/>
+				<div className={styles.imageInfo}>
+					<div className={styles.imageName}>
+						{nameShorter(image.compressed.name)}
 					</div>
-				</div>
-				<div className={styles.original}>
-					<div>original</div>
-					<img src={image.original.url} alt={image.original.name} />
-					<div className={styles.imageInfo}>
-						<div className={styles.imageName}>
-							{image.original.name}
-						</div>
-						<div className={styles.imageSize}>
-							{Number(image.original.size) / 1000}kb
-						</div>
+					<div className={styles.imageSize}>
+						{(Number(image.original.size) / 1000).toFixed(2)}kb
+						{" -> "}
+						{(Number(image.compressed.size) / 1000).toFixed(2)}
+						kb
+					</div>
+					<div className={styles.sizeReduced}>
+						{(
+							(Number(image.compressed.size) /
+								Number(image.original.size)) *
+							100
+						).toFixed(2)}
+						%
 					</div>
 				</div>
 			</div>
@@ -171,6 +190,46 @@ function App() {
 			</div>
 
 			<div className={styles.imagesContainer}>{imgHTML}</div>
+			{compare && (
+				<div className={styles.imagesCompareContainer}>
+					{" "}
+					<ComparisonSlider
+						defaultValue={50}
+						itemOne={
+							<img
+								src={compare.compressed.url}
+								alt={compare.compressed.name}
+							/>
+						}
+						itemTwo={
+							<img
+								src={compare.original.url}
+								alt={compare.original.name}
+							/>
+						}
+						handleAfter={
+							<div
+								className={styles.handleAfter}
+								style={{
+									width: "2px",
+									height: "100%",
+									backgroundColor: "#eee",
+								}}></div>
+						}
+						handleBefore={
+							<div
+								className={styles.handleBefore}
+								style={{
+									width: "2px",
+									height: "100%",
+									backgroundColor: "#eee",
+								}}></div>
+						}
+						aspectRatio={1 / 1}
+						orientation="horizontal"
+					/>
+				</div>
+			)}
 		</div>
 	);
 }
