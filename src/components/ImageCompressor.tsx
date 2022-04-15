@@ -125,7 +125,7 @@ function ImageCompressor() {
 								? 50
 								: controlsValue.maxHeight,
 						mimeType:
-							controlsValue !== "auto"
+							controlsValue.type !== "auto"
 								? `image/${controlsValue.type}`
 								: "auto",
 						convertSize: 10000000,
