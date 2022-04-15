@@ -124,7 +124,18 @@ img {
 		width: 25%;
 		border: 1px solid rgb(238, 238, 238);
 		padding: 10px;
+		.select{
+			padding: 5px;
+			width: 100px;
+			background: none;
+			border: none;
+			border-bottom: 1px solid rgb(238, 238, 238);
 
+			option{
+				background: #fff;
+				
+			}
+		}
 		.thumbnails {
 			height: 300px;
 			overflow-y: scroll;
@@ -158,6 +169,14 @@ img {
 		border: 1px solid #ccc;
 		border-bottom: 2px solid #ccc;
 		padding: 10px 50px;
+		position: relative;
+		.imagePreview__small{
+			font-size: 14px;
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			color: rgb(186, 186, 186);
+		}
 	}
 	.imageInfoContainer {
 		border: 1px solid #ccc;
@@ -187,6 +206,7 @@ img {
 		.imageInfo__compressed {
 			margin-top: 10px;
 		}
+		
 		h4 {
 			padding: 0;
 			margin: 0;

@@ -45,15 +45,15 @@ function App() {
 		maxWidth: 1200,
 		maxHeight: 1200,
 		quality: 0.8,
-		minSize: 200,
+		type: "auto",
 	});
 	const [controlsValue, setControlsValue] = useState<any>({
 		maxWidth: 800,
 		maxHeight: 800,
 		quality: 0.8,
-		minSize: 200,
+		type: "auto",
 	});
-
+	const [isFirstLoad, setIsFirstLoad] = useState<boolean | null>(null);
 	const [isHovering, setIsHovering] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -67,7 +67,6 @@ function App() {
 		}
 		return file.name;
 	};
-	
 
 	const handleImageCompression = async () => {
 		if (blobs) {
@@ -80,6 +79,7 @@ function App() {
 								: controlsValue.quality < 0.1
 								? 0.1
 								: controlsValue.quality,
+						strict: true,
 						success(result) {
 							setImages((prevState: ImagesInterface[]) =>
 								Array.from(
@@ -112,8 +112,7 @@ function App() {
 							if (image.file.type === "image/tiff") {
 								toast.error("TIFF files are not supported");
 							}
-							
-							
+
 							image.status = "error";
 						},
 						maxWidth:
@@ -124,17 +123,17 @@ function App() {
 							controlsValue.maxHeight < 50
 								? 50
 								: controlsValue.maxHeight,
-						mimeType: "image/jpeg" || "image/png",
-						convertSize:
-							controlsValue.minSize < 10
-								? 10
-								: controlsValue.minSize * 1000,
+						mimeType:
+							controlsValue !== "auto"
+								? `image/${controlsValue.type}`
+								: "auto",
+						convertSize: 10000000,
 						checkOrientation: true,
 						convertTypes: [
 							"image/jpeg",
 							"image/png",
 							"image/webp",
-							"image/bmp",
+
 							"image/gif",
 							"image/svg+xml",
 						],
@@ -142,6 +141,14 @@ function App() {
 			});
 		}
 	};
+	// images.length >= 1 &&
+	// 	!compare.original.file &&
+	// 	setCompare({
+	// 		original: images[0].original,
+	// 		compressed: images[0].compressed,
+	// 	});
+
+	console.log(images);
 
 	const handleImageZip = async () => {
 		const zip = new JSZip();
@@ -150,7 +157,6 @@ function App() {
 				"readMe.txt",
 				`Thank you for using this tool.
 Image compressor tool by Blackkspydo 
-Code will be opensourced soon in github
 Contact me for any questions or suggestions or if you want to contribute to this project 
 telegram: https://t.me/blackkspydo 
 telegram channel: https://t.me/codenewbie 
@@ -191,16 +197,17 @@ github: https://github.com/blackkspydo`
 			// 			original: filtered[0].original,
 			// 			compressed: filtered[0].compressed,
 			// 		});
-			
+
 			// 	});
 			// }, 1000);
 		}
 	}, [controlsValue]);
+	console.log(controlsValue);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			setControlsValue(controls);
-		}, 200);
+		}, 300);
 		return () => clearTimeout(timer);
 	}, [controls]);
 
@@ -216,8 +223,7 @@ github: https://github.com/blackkspydo`
 				});
 		}
 	}, [images]);
-	
-	
+
 	const imgHTML = useMemo(() => {
 		return images.map((image, index) => {
 			return (
@@ -225,7 +231,6 @@ github: https://github.com/blackkspydo`
 					<img
 						onClick={() => {
 							setCompare(image);
-							
 						}}
 						src={image.compressed.url}
 						alt={image.compressed.name}
@@ -342,7 +347,7 @@ github: https://github.com/blackkspydo`
 					accept="image/png, image/jpeg, image/webp, image/bmp, image/gif, image/svg+xml"
 					onChange={(e: any) => {
 						const files = Array.from(e.target.files);
-						
+
 						const fileObj = files.map((file: any) => {
 							return {
 								file: file,
@@ -454,32 +459,35 @@ github: https://github.com/blackkspydo`
 								{" px"}
 							</div>
 							<div className={styles.formGroup}>
-								<label
-									className={styles.bold}
-									htmlFor="minSize">
-									Min size:
+								<label className={styles.bold} htmlFor="type">
+									File type:
 								</label>
-								<input
-									className={styles.textlike}
-									type="number"
-									id="minSize"
-									name="minSize"
-									value={controls.minSize}
+								<select
+									className={styles.select}
+									id="type"
+									name="type"
+									value={controls.type}
 									onChange={(e) => {
 										setControls({
 											...controls,
-											minSize: Number(e.target.value),
+											type: e.target.value,
 										});
-									}}
-								/>
-								{" kb"}
+									}}>
+									<option value="auto">auto</option>
+									<option value="jpeg">jpeg</option>
+									<option value="png">png</option>
+									<option value="webp">webp</option>
+									<option value="gif">gif</option>
+									<option value="svg+xml">svg+xml</option>
+								</select>
+
 								<span
 									style={{
 										fontSize: "0.8em",
 										color: "gray",
 										display: "block",
 									}}>
-									(To trigger compression)
+									(Leave untouched for default file type)
 								</span>
 							</div>
 						</form>
@@ -487,6 +495,11 @@ github: https://github.com/blackkspydo`
 				</div>
 				<div className={styles.imagePreview}>
 					<h3>Image Preview</h3>
+					{!compare.compressed.file && (
+						<span className={styles.imagePreview__small}>
+							Click on the thumbnail to view on full size
+						</span>
+					)}
 					<ComparisonSlider
 						defaultValue={50}
 						itemTwo={
@@ -614,15 +627,14 @@ github: https://github.com/blackkspydo`
 											LastModified:
 										</span>{" "}
 										<span className={styles.info}>
-											{compare.compressed.file.lastModifiedDate.toLocaleDateString(
-												"en-US",
-												{
-													month: "short",
-													day: "numeric",
-													year: "numeric",
-													weekday: "short",
-												}
-											)}
+											{new Date(
+												compare.compressed.file.lastModified
+											).toLocaleDateString("en-US", {
+												month: "short",
+												day: "numeric",
+												year: "numeric",
+												weekday: "short",
+											})}
 										</span>
 									</div>
 									<div className={styles.infoItem}>
@@ -682,15 +694,14 @@ github: https://github.com/blackkspydo`
 											LastModified:
 										</span>{" "}
 										<span className={styles.info}>
-											{compare.compressed.file.lastModifiedDate.toLocaleDateString(
-												"en-US",
-												{
-													month: "short",
-													day: "numeric",
-													year: "numeric",
-													weekday: "short",
-												}
-											)}
+											{new Date(
+												compare.compressed.file.lastModified
+											).toLocaleDateString("en-US", {
+												month: "short",
+												day: "numeric",
+												year: "numeric",
+												weekday: "short",
+											})}
 										</span>
 									</div>
 									<div className={styles.infoItem}>
