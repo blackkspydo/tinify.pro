@@ -2,83 +2,170 @@ import { useState, useRef, useEffect } from "react";
 import Compressor from "compressorjs";
 import { ComparisonSlider } from "react-comparison-slider";
 import styles from "./App.module.scss";
-
+import toast, { Toaster } from "react-hot-toast";
 interface BlobObjInterface {
 	file: File | Blob;
 	name: string;
 	url: string;
 	size: number;
+	status: string;
 }
+interface image {
+	file: File | Blob;
+	name: string;
+	url: string;
+	size: number;
+}
+
 interface ImagesInterface {
-	original: BlobObjInterface;
-	compressed: BlobObjInterface;
+	original: image;
+	compressed: image;
 }
 function App() {
 	const [images, setImages] = useState<ImagesInterface[]>([]);
 	const [blobs, setBlobs] = useState<BlobObjInterface[]>([]);
-	const [compare, setCompare] = useState<ImagesInterface | null>(null);
+	const [compare, setCompare] = useState<any>({
+		original: {
+			file: null,
+			name: "",
+			url: "https://picsum.photos/seed/picsum/800/800",
+			size: 0,
+		},
+		compressed: {
+			file: null,
+			name: "",
+			url: "https://picsum.photos/seed/picsum/800/800",
+			size: 0,
+		},
+	});
+	const [controls, setControls] = useState<any>({
+		maxWidth: 800,
+		maxHeight: 800,
+		quality: 0.8,
+		minSize: 200,
+	});
+
 	const [isHovering, setIsHovering] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
-	console.log(blobs);
 
-	const nameShorter = (name: string) => {
-		if (name.length > 20) {
-			return name.substring(0, 20) + "...";
+	const nameShorter = (file: File) => {
+		if (file.name.length > 20) {
+			return (
+				file.name.split("").splice(0, 12).join("") +
+				"..." +
+				file.name.split("").splice(-10).join("")
+			);
 		}
-		return name;
+		return file.name;
 	};
+	// console.log(blobs);
 
 	const handleImageCompression = async () => {
 		if (blobs) {
-			blobs.forEach((image) => {
-				new Compressor(image.file, {
-					quality: 0.5,
-					success(result) {
-						console.log(result);
-						setImages((prevState: ImagesInterface[]) => [
-							...prevState,
-							{
-								original: image,
-								compressed: {
-									file: result,
-									name: image.name,
-									url: URL.createObjectURL(result),
-									size: result.size,
+			await blobs.forEach((image) => {
+				image.status === "pending" &&
+					new Compressor(image.file, {
+						quality:
+							controls.quality > 1
+								? 1
+								: controls.quality < 0.1
+								? 0.1
+								: controls.quality,
+						success(result) {
+							setImages((prevState: ImagesInterface[]) => [
+								...prevState,
+								{
+									original: {
+										file: image.file,
+										name: image.name,
+										url: URL.createObjectURL(image.file),
+										size: image.size,
+									},
+									compressed: {
+										file: result,
+										name: image.name,
+										url: URL.createObjectURL(result),
+										size: result.size,
+									},
 								},
-							},
-						]);
-					},
-					error(err) {
-						console.log(err.message);
-						console.log("errrrrr");
-					},
-					maxWidth: 700,
-					maxHeight: 700,
-					mimeType: "image/jpeg",
-					convertSize: 500000,
-					checkOrientation: true,
-					convertTypes: [
-						"image/jpeg",
-						"image/png",
-						"image/webp",
-						"image/bmp",
-						"image/gif",
-						"image/svg+xml",
-						"image/tiff",
-					],
-				});
+							]);
+							image.status = "done";
+						},
+						error(err) {
+							if (image.file.type === "image/tiff") {
+								toast.error("TIFF files are not supported");
+							}
+							console.log(err.message);
+							console.log("errrrrr");
+							image.status = "error";
+						},
+						maxWidth: controls.maxWidth,
+						maxHeight: controls.maxHeight,
+						mimeType: "image/jpeg" || "image/png",
+						convertSize: controls.minSize * 1000,
+						checkOrientation: true,
+						convertTypes: [
+							"image/jpeg",
+							"image/png",
+							"image/webp",
+							"image/bmp",
+							"image/gif",
+							"image/svg+xml",
+						],
+					});
 			});
 		}
 	};
 	useEffect(() => {
 		if (blobs.length > 0) {
-			handleImageCompression();
+			handleImageCompression().then(() => {
+				toast.success("Images compressed successfully");
+			});
 		}
 	}, [blobs]);
+	useEffect(() => {
+		if (blobs.length > 0) {
+			setImages([]);
+			setBlobs((state) => {
+				return state.map((image) => {
+					image.status = "pending";
+					return image;
+				});
+			});
 
-	const imgHTML = images.map((image) => {
+			// setTimeout(() => {
+			// 	handleImageCompression().then(() => {
+			// 		const filtered = images.filter(
+			// 			(img) => img.original.name === compare.original.name
+			// 		);
+			// 		setCompare({
+			// 			original: filtered[0].original,
+			// 			compressed: filtered[0].compressed,
+			// 		});
+			// 		console.log("filtered", filtered);
+			// 	});
+			// }, 1000);
+		}
+	}, [controls]);
+
+	useEffect(() => {
+		if (images.length > 0) {
+			const filtered = images.filter(
+				(img) => img.original.name === compare.original.name
+			);
+			console.log(filtered);
+			filtered.length > 0 &&
+				setCompare({
+					original: filtered[0].original,
+					compressed: filtered[0].compressed,
+				});
+		}
+	}, [images]);
+
+	console.log("controls", controls);
+	const imgHTML = Array.from(new Set(images)).map((image, index) => {
 		return (
-			<div className={styles.compressed}>
+			<div className={styles.compressed} key={image.compressed.url}>
 				<img
 					onClick={() => {
 						setCompare(image);
@@ -87,31 +174,58 @@ function App() {
 					src={image.compressed.url}
 					alt={image.compressed.name}
 				/>
-				<div className={styles.imageInfo}>
-					<div className={styles.imageName}>
-						{nameShorter(image.compressed.name)}
-					</div>
-					<div className={styles.imageSize}>
-						{(Number(image.original.size) / 1000).toFixed(2)}kb
-						{" -> "}
-						{(Number(image.compressed.size) / 1000).toFixed(2)}
-						kb
-					</div>
-					<div className={styles.sizeReduced}>
-						{(
-							(Number(image.compressed.size) /
-								Number(image.original.size)) *
-							100
-						).toFixed(2)}
-						%
-					</div>
-				</div>
+				<button
+					className={styles.close_button}
+					onClick={() => {
+						toast.error("Deleted");
+						setImages((prevState: ImagesInterface[]) =>
+							prevState.length > 1
+								? prevState.filter(
+										(img) =>
+											img.compressed.url !==
+											image.compressed.url
+								  )
+								: []
+						);
+						images.length > 1
+							? index > 1
+								? compare === image &&
+								  setCompare(images[index - 1])
+								: setCompare(images[index + 1])
+							: setCompare({
+									original: {
+										file: null,
+										name: "",
+										url: "https://picsum.photos/seed/picsum/800/800",
+										size: 0,
+									},
+									compressed: {
+										file: null,
+										name: "",
+										url: "https://picsum.photos/seed/picsum/800/800",
+										size: 0,
+									},
+							  });
+					}}>
+					X
+				</button>
 			</div>
 		);
 	});
 
+	const lastmodified = (file: File) => {
+		const date = new Date(file.lastModified);
+		return date.toString();
+	};
+
 	return (
 		<div className="App">
+			<Toaster
+				position="bottom-right"
+				toastOptions={{
+					duration: 2000,
+				}}
+			/>
 			<h1>Image compressor</h1>
 			<div
 				id="drop_zone"
@@ -125,6 +239,7 @@ function App() {
 							name: file.name,
 							url: URL.createObjectURL(file),
 							size: file.size,
+							status: "pending",
 						};
 					});
 
@@ -150,13 +265,13 @@ function App() {
 					fileInputRef.current!.click();
 				}}
 				style={{
-					border: "2px dashed #bbb",
-					padding: "20px",
+					border: "3px dashed #bbb",
+					padding: "30px",
 					textAlign: "center",
 					fontSize: "16px",
 					cursor: "pointer",
-					backgroundColor: isHovering ? "#eee" : "",
-					maxWidth: "500px",
+					backgroundColor: isHovering ? "#eee" : "#fff",
+					maxWidth: "600px",
 					maxHeight: "500px",
 					margin: "20px auto",
 				}}>
@@ -164,15 +279,15 @@ function App() {
 					style={{
 						pointerEvents: "none",
 					}}>
-					Drag one or more assetfiles to this Drop Zone or Click here
-					to select files
+					Drag one or more files to this Drop Zone or Click here to
+					select files
 				</p>
 				<input
 					hidden
 					ref={fileInputRef}
 					multiple
 					type="file"
-					accept="image/*"
+					accept="image/png, image/jpeg, image/webp, image/bmp, image/gif, image/svg+xml"
 					onChange={(e: any) => {
 						const files = Array.from(e.target.files);
 						console.log(files);
@@ -182,6 +297,7 @@ function App() {
 								name: file.name,
 								url: URL.createObjectURL(file),
 								size: file.size,
+								status: "pending",
 							};
 						});
 						setBlobs((state: any) => [...state, ...fileObj]);
@@ -189,23 +305,152 @@ function App() {
 				/>
 			</div>
 
-			<div className={styles.imagesContainer}>{imgHTML}</div>
-			{compare && (
-				<div className={styles.imagesCompareContainer}>
-					{" "}
+			<div className={styles.imagePreviewContainer}>
+				<div className={styles.thumbnailsContainer}>
+					<h3>Image Thumbnails</h3>
+					<div
+						className={styles.thumbnails}
+						style={{
+							justifyContent:
+								images.length === 1
+									? "flex-start"
+									: "space-around",
+						}}>
+						{images.length ? (
+							imgHTML
+						) : (
+							<p
+								style={{
+									gridColumn: "1/3",
+								}}>
+								No images imported
+							</p>
+						)}
+					</div>
+					<div className={styles.ToolsContainer}>
+						<h3>Tools</h3>
+						<form>
+							<div className={styles.formGroup}>
+								<label
+									className={styles.bold}
+									htmlFor="quality">
+									Quality:
+								</label>
+								<input
+									type="number"
+									id="quality"
+									name="quality"
+									value={controls.quality}
+									onChange={(e) => {
+										setControls({
+											...controls,
+											quality: Number(e.target.value),
+										});
+									}}
+									min={0.1}
+									max={1}
+									step={0.1}
+								/>
+							</div>
+							<div className={styles.formGroup}>
+								<label
+									className={styles.bold}
+									htmlFor="maxWidth">
+									Max Width:
+								</label>
+								<input
+									className={styles.textlike}
+									type="number"
+									id="maxWidth"
+									name="maxWidth"
+									value={controls.maxWidth}
+									onChange={(e) => {
+										setControls({
+											...controls,
+											maxWidth: Number(e.target.value),
+										});
+									}}
+									min={10}
+									max={10000}
+								/>
+								{" px"}
+							</div>
+							<div className={styles.formGroup}>
+								<label
+									className={styles.bold}
+									htmlFor="maxHeight">
+									Max Height:
+								</label>
+								<input
+									className={styles.textlike}
+									type="number"
+									id="maxHeight"
+									name="maxHeight"
+									value={controls.maxHeight}
+									onChange={(e) => {
+										setControls({
+											...controls,
+											maxHeight: Number(e.target.value),
+										});
+									}}
+									min={10}
+									max={10000}
+								/>
+								{" px"}
+							</div>
+							<div className={styles.formGroup}>
+								<label
+									className={styles.bold}
+									htmlFor="minSize">
+									Min size:
+								</label>
+								<input
+									className={styles.textlike}
+									type="number"
+									id="minSize"
+									name="minSize"
+									value={controls.minSize}
+									onChange={(e) => {
+										setControls({
+											...controls,
+											minSize: Number(e.target.value),
+										});
+									}}
+								/>
+								{" kb"}
+								<span
+									style={{
+										fontSize: "0.8em",
+										color: "gray",
+										display: "block",
+									}}>
+									(To trigger compression)
+								</span>
+							</div>
+						</form>
+					</div>
+				</div>
+				<div className={styles.imagePreview}>
+					<h3>Image Preview</h3>
 					<ComparisonSlider
 						defaultValue={50}
-						itemOne={
-							<img
-								src={compare.compressed.url}
-								alt={compare.compressed.name}
-							/>
-						}
 						itemTwo={
-							<img
-								src={compare.original.url}
-								alt={compare.original.name}
-							/>
+							<div className={styles.afterContainer}>
+								<img
+									src={compare.compressed.url}
+									alt={compare.compressed.name}
+								/>
+								<div className={styles.imageInfo}>after</div>
+							</div>
+						}
+						itemOne={
+							<div className={styles.beforeContainer}>
+								<img
+									src={compare.original.url}
+									alt={compare.original.name}
+								/>
+								<div className={styles.imageInfo}>before</div>
+							</div>
 						}
 						handleAfter={
 							<div
@@ -229,7 +474,256 @@ function App() {
 						orientation="horizontal"
 					/>
 				</div>
-			)}
+				<div className={styles.imageInfoContainer}>
+					<div className={styles.imageDetailsHeader}>
+						<h3>Image Details</h3>
+						{compare.original.file ? (
+							<>
+								<div
+									className={`${styles.imageInfo} ${styles.imageInfo__original}`}>
+									<h4>Original Image</h4>
+									<div className={styles.infoItem}>
+										<span className={styles.bold}>
+											Time Stamp:
+										</span>{" "}
+										<span className={styles.info}>
+											{new Date(
+												compare.original.file.lastModified
+											).toLocaleTimeString("en-US", {
+												hour12: false,
+												hour: "2-digit",
+												minute: "2-digit",
+												second: "2-digit",
+											})}
+										</span>
+									</div>
+									<div className={styles.infoItem}>
+										<span className={styles.bold}>
+											LastModified:
+										</span>{" "}
+										<span className={styles.info}>
+											{new Date(
+												compare.original.file.lastModified
+											).toLocaleDateString("en-US", {
+												month: "short",
+												day: "numeric",
+												year: "numeric",
+												weekday: "short",
+											})}
+										</span>
+									</div>
+									<div className={styles.infoItem}>
+										<span className={styles.bold}>
+											Name:
+										</span>{" "}
+										<span className={styles.info}>
+											{nameShorter(compare.original.file)}
+										</span>
+									</div>
+									<div className={styles.infoItem}>
+										<span className={styles.bold}>
+											Type:
+										</span>{" "}
+										{compare.original.file.type}
+									</div>
+									<div className={styles.infoItem}>
+										<span className={styles.bold}>
+											Size:
+										</span>{" "}
+										{(
+											Number(compare.original.size) / 1000
+										).toFixed(2)}
+										kb
+									</div>
+								</div>
+								<div
+									className={`${styles.imageInfo} ${styles.imageInfo__compressed}`}>
+									<h4>Compressed Image</h4>
+									<div className={styles.infoItem}>
+										<span className={styles.bold}>
+											Time Stamp:
+										</span>{" "}
+										<span className={styles.info}>
+											{new Date(
+												compare.compressed.file.lastModified
+											).toLocaleTimeString("en-US", {
+												hour12: false,
+												hour: "2-digit",
+												minute: "2-digit",
+												second: "2-digit",
+											})}
+										</span>
+									</div>
+									<div className={styles.infoItem}>
+										<span className={styles.bold}>
+											LastModified:
+										</span>{" "}
+										<span className={styles.info}>
+											{compare.compressed.file.lastModifiedDate.toLocaleDateString(
+												"en-US",
+												{
+													month: "short",
+													day: "numeric",
+													year: "numeric",
+													weekday: "short",
+												}
+											)}
+										</span>
+									</div>
+									<div className={styles.infoItem}>
+										<span className={styles.bold}>
+											Name:
+										</span>{" "}
+										<span className={styles.info}>
+											{nameShorter(
+												compare.compressed.file
+											)}
+										</span>
+									</div>
+									<div className={styles.infoItem}>
+										<span className={styles.bold}>
+											Type:
+										</span>{" "}
+										{compare.compressed.file.type}
+									</div>
+									<div className={styles.infoItem}>
+										<span className={styles.bold}>
+											Size:
+										</span>{" "}
+										{(
+											Number(compare.compressed.size) /
+											1000
+										).toFixed(2)}
+										kb (
+										{(
+											100 -
+											(Number(compare.compressed.size) /
+												Number(compare.original.size)) *
+												100
+										).toFixed(2)}
+										% Off)
+									</div>
+								</div>
+								<div
+									className={`${styles.imageInfo} ${styles.imageInfo__compressed}`}>
+									<h4>Total Compression result</h4>
+									<div className={styles.infoItem}>
+										<span className={styles.bold}>
+											Time Stamp:
+										</span>{" "}
+										<span className={styles.info}>
+											{new Date(
+												compare.compressed.file.lastModified
+											).toLocaleTimeString("en-US", {
+												hour12: false,
+												hour: "2-digit",
+												minute: "2-digit",
+												second: "2-digit",
+											})}
+										</span>
+									</div>
+									<div className={styles.infoItem}>
+										<span className={styles.bold}>
+											LastModified:
+										</span>{" "}
+										<span className={styles.info}>
+											{compare.compressed.file.lastModifiedDate.toLocaleDateString(
+												"en-US",
+												{
+													month: "short",
+													day: "numeric",
+													year: "numeric",
+													weekday: "short",
+												}
+											)}
+										</span>
+									</div>
+									<div className={styles.infoItem}>
+										<span className={styles.bold}>
+											Original Filesize:
+										</span>{" "}
+										<span className={styles.info}>
+											{(
+												images.reduce((total, img) => {
+													return (
+														total +
+														Number(
+															img.original.file
+																.size
+														)
+													);
+												}, 0) / 1000000
+											).toFixed(2)}
+											{"mb"}
+										</span>
+									</div>
+									<div className={styles.infoItem}>
+										<span className={styles.bold}>
+											Final Filesize:
+										</span>{" "}
+										<span className={styles.info}>
+											{(
+												images.reduce((total, img) => {
+													return (
+														total +
+														Number(
+															img.compressed.file
+																.size
+														)
+													);
+												}, 0) / 1000000
+											).toFixed(2)}
+											{"mb"}
+										</span>
+									</div>
+									<div className={styles.infoItem}>
+										<span className={styles.bold}>
+											File Types:
+										</span>{" "}
+										{Array.from(
+											new Set(
+												images.map((img) => {
+													return img.original.file.type.split(
+														"/"
+													)[1];
+												})
+											)
+										).join(", ")}
+									</div>
+									<div className={styles.infoItem}>
+										<span className={styles.bold}>
+											Reduced By
+										</span>{" "}
+										{(
+											images.reduce((total, img) => {
+												return (
+													total +
+													Number(
+														img.original.file.size
+													)
+												);
+											}, 0) /
+											10000 /
+											(images.reduce((total, img) => {
+												return (
+													total +
+													Number(
+														img.original.file.size
+													)
+												);
+											}, 0) /
+												1000000)
+										).toFixed(2)}
+										% Off
+									</div>
+								</div>
+							</>
+						) : (
+							<p>No image Selected</p>
+						)}
+					</div>
+				</div>
+			</div>
 		</div>
 	);
 }
