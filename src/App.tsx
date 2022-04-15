@@ -1,8 +1,11 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import Compressor from "compressorjs";
 import { ComparisonSlider } from "react-comparison-slider";
 import styles from "./App.module.scss";
 import toast, { Toaster } from "react-hot-toast";
+import { motion, AnimatePresence } from "framer-motion";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 interface BlobObjInterface {
 	file: File | Blob;
 	name: string;
@@ -44,6 +47,12 @@ function App() {
 		quality: 0.8,
 		minSize: 200,
 	});
+	const [controlsValue, setControlsValue] = useState<any>({
+		maxWidth: 800,
+		maxHeight: 800,
+		quality: 0.8,
+		minSize: 200,
+	});
 
 	const [isHovering, setIsHovering] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
@@ -66,29 +75,37 @@ function App() {
 				image.status === "pending" &&
 					new Compressor(image.file, {
 						quality:
-							controls.quality > 1
+							controlsValue.quality > 1
 								? 1
-								: controls.quality < 0.1
+								: controlsValue.quality < 0.1
 								? 0.1
-								: controls.quality,
+								: controlsValue.quality,
 						success(result) {
-							setImages((prevState: ImagesInterface[]) => [
-								...prevState,
-								{
-									original: {
-										file: image.file,
-										name: image.name,
-										url: URL.createObjectURL(image.file),
-										size: image.size,
-									},
-									compressed: {
-										file: result,
-										name: image.name,
-										url: URL.createObjectURL(result),
-										size: result.size,
-									},
-								},
-							]);
+							setImages((prevState: ImagesInterface[]) =>
+								Array.from(
+									new Set([
+										...prevState,
+										{
+											original: {
+												file: image.file,
+												name: image.name,
+												url: URL.createObjectURL(
+													image.file
+												),
+												size: image.size,
+											},
+											compressed: {
+												file: result,
+												name: image.name,
+												url: URL.createObjectURL(
+													result
+												),
+												size: result.size,
+											},
+										},
+									])
+								)
+							);
 							image.status = "done";
 						},
 						error(err) {
@@ -99,10 +116,19 @@ function App() {
 							console.log("errrrrr");
 							image.status = "error";
 						},
-						maxWidth: controls.maxWidth,
-						maxHeight: controls.maxHeight,
+						maxWidth:
+							controlsValue.maxWidth < 50
+								? 50
+								: controlsValue.maxWidth,
+						maxHeight:
+							controlsValue.maxHeight < 50
+								? 50
+								: controlsValue.maxHeight,
 						mimeType: "image/jpeg" || "image/png",
-						convertSize: controls.minSize * 1000,
+						convertSize:
+							controlsValue.minSize < 10
+								? 10
+								: controlsValue.minSize * 1000,
 						checkOrientation: true,
 						convertTypes: [
 							"image/jpeg",
@@ -116,6 +142,30 @@ function App() {
 			});
 		}
 	};
+
+	const handleImageZip = async () => {
+		const zip = new JSZip();
+		if (images) {
+			zip.file(
+				"readMe.txt",
+				`
+				Thank you for using this tool.
+				Image compressor tool by Blackkspydo \n
+				telegram: https://t.me/blackkspydo \n
+				telegram channel: https://t.me/codenewbie \n
+				Code will be opensourced soon in github \n
+				Will post on telegram channel soon \n
+			`
+			);
+			await images.forEach((image) => {
+				zip.file(image.compressed.name, image.compressed.file);
+			});
+			zip.generateAsync({ type: "blob" }).then((content) => {
+				saveAs(content, "images.zip");
+			});
+		}
+	};
+
 	useEffect(() => {
 		if (blobs.length > 0) {
 			handleImageCompression().then(() => {
@@ -146,14 +196,21 @@ function App() {
 			// 	});
 			// }, 1000);
 		}
+	}, [controlsValue]);
+
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setControlsValue(controls);
+		}, 200);
+		return () => clearTimeout(timer);
 	}, [controls]);
+
 
 	useEffect(() => {
 		if (images.length > 0) {
 			const filtered = images.filter(
 				(img) => img.original.name === compare.original.name
 			);
-			console.log(filtered);
 			filtered.length > 0 &&
 				setCompare({
 					original: filtered[0].original,
@@ -161,57 +218,59 @@ function App() {
 				});
 		}
 	}, [images]);
-
+	console.log(blobs.length);
 	console.log("controls", controls);
-	const imgHTML = Array.from(new Set(images)).map((image, index) => {
-		return (
-			<div className={styles.compressed} key={image.compressed.url}>
-				<img
-					onClick={() => {
-						setCompare(image);
-						console.log("first");
-					}}
-					src={image.compressed.url}
-					alt={image.compressed.name}
-				/>
-				<button
-					className={styles.close_button}
-					onClick={() => {
-						toast.error("Deleted");
-						setImages((prevState: ImagesInterface[]) =>
-							prevState.length > 1
-								? prevState.filter(
-										(img) =>
-											img.compressed.url !==
-											image.compressed.url
-								  )
-								: []
-						);
-						images.length > 1
-							? index > 1
-								? compare === image &&
-								  setCompare(images[index - 1])
-								: setCompare(images[index + 1])
-							: setCompare({
-									original: {
-										file: null,
-										name: "",
-										url: "https://picsum.photos/seed/picsum/800/800",
-										size: 0,
-									},
-									compressed: {
-										file: null,
-										name: "",
-										url: "https://picsum.photos/seed/picsum/800/800",
-										size: 0,
-									},
-							  });
-					}}>
-					X
-				</button>
-			</div>
-		);
-	});
+	const imgHTML = useMemo(() => {
+		return images.map((image, index) => {
+			return (
+				<div className={styles.compressed} key={image.compressed.url}>
+					<img
+						onClick={() => {
+							setCompare(image);
+							console.log("first");
+						}}
+						src={image.compressed.url}
+						alt={image.compressed.name}
+					/>
+					<button
+						className={styles.close_button}
+						onClick={() => {
+							toast.error("Deleted");
+							setImages((prevState: ImagesInterface[]) =>
+								prevState.length > 1
+									? prevState.filter(
+											(img) =>
+												img.compressed.url !==
+												image.compressed.url
+									  )
+									: []
+							);
+							images.length > 1
+								? index > 1
+									? compare === image &&
+									  setCompare(images[index - 1])
+									: setCompare(images[index + 1])
+								: setCompare({
+										original: {
+											file: null,
+											name: "",
+											url: "https://picsum.photos/seed/picsum/800/800",
+											size: 0,
+										},
+										compressed: {
+											file: null,
+											name: "",
+											url: "https://picsum.photos/seed/picsum/800/800",
+											size: 0,
+										},
+								  });
+						}}>
+						X
+					</button>
+				</div>
+			);
+		});
+	}, [images]);
 
 	const lastmodified = (file: File) => {
 		const date = new Date(file.lastModified);
@@ -223,7 +282,7 @@ function App() {
 			<Toaster
 				position="bottom-right"
 				toastOptions={{
-					duration: 2000,
+					duration: 1000,
 				}}
 			/>
 			<h1>Image compressor</h1>
@@ -308,25 +367,28 @@ function App() {
 			<div className={styles.imagePreviewContainer}>
 				<div className={styles.thumbnailsContainer}>
 					<h3>Image Thumbnails</h3>
-					<div
-						className={styles.thumbnails}
-						style={{
-							justifyContent:
-								images.length === 1
-									? "flex-start"
-									: "space-around",
-						}}>
-						{images.length ? (
-							imgHTML
-						) : (
-							<p
-								style={{
-									gridColumn: "1/3",
-								}}>
-								No images imported
-							</p>
-						)}
-					</div>
+					<AnimatePresence>
+						<motion.div
+							layout
+							className={styles.thumbnails}
+							style={{
+								justifyContent:
+									images.length === 1
+										? "flex-start"
+										: "space-around",
+							}}>
+							{images.length ? (
+								imgHTML
+							) : (
+								<p
+									style={{
+										gridColumn: "1/3",
+									}}>
+									No images imported
+								</p>
+							)}
+						</motion.div>
+					</AnimatePresence>
 					<div className={styles.ToolsContainer}>
 						<h3>Tools</h3>
 						<form>
@@ -695,26 +757,51 @@ function App() {
 											Reduced By
 										</span>{" "}
 										{(
+											100 -
 											images.reduce((total, img) => {
 												return (
 													total +
 													Number(
-														img.original.file.size
+														img.compressed.file.size
 													)
 												);
 											}, 0) /
-											10000 /
-											(images.reduce((total, img) => {
-												return (
-													total +
-													Number(
-														img.original.file.size
-													)
-												);
-											}, 0) /
-												1000000)
+												10000 /
+												(images.reduce((total, img) => {
+													return (
+														total +
+														Number(
+															img.original.file
+																.size
+														)
+													);
+												}, 0) /
+													1000000)
 										).toFixed(2)}
-										% Off
+										% of original filesize
+									</div>
+								</div>
+								<div className={styles.downloadContainer}>
+									<div className={styles.download}>
+										<button
+											className={styles.downloadButton}>
+											<a
+												target="_blank"
+												rel="noreferrer"
+												href={compare.compressed.url}
+												download={
+													compare.compressed.file.name
+												}>
+												Download Current
+											</a>
+										</button>
+									</div>
+									<div className={styles.download}>
+										<button
+											onClick={handleImageZip}
+											className={styles.downloadButton}>
+											Download All
+										</button>
 									</div>
 								</div>
 							</>
