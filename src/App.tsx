@@ -42,8 +42,8 @@ function App() {
 		},
 	});
 	const [controls, setControls] = useState<any>({
-		maxWidth: 800,
-		maxHeight: 800,
+		maxWidth: 1200,
+		maxHeight: 1200,
 		quality: 0.8,
 		minSize: 200,
 	});
