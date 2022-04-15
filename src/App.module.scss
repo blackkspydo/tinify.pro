@@ -124,16 +124,19 @@ img {
 		width: 25%;
 		border: 1px solid rgb(238, 238, 238);
 		padding: 10px;
-		.select{
-			padding: 5px;
+		.select {
+			padding: 7px;
 			width: 100px;
 			background: none;
 			border: none;
 			border-bottom: 1px solid rgb(238, 238, 238);
+			font-size: 15px;
+			color: rgb(101, 101, 101);
 
-			option{
+			option {
 				background: #fff;
-				
+				font-size: 14px;
+				color: rgb(101, 101, 101);
 			}
 		}
 		.thumbnails {
@@ -170,7 +173,7 @@ img {
 		border-bottom: 2px solid #ccc;
 		padding: 10px 50px;
 		position: relative;
-		.imagePreview__small{
+		.imagePreview__small {
 			font-size: 14px;
 			position: absolute;
 			top: 10px;
@@ -206,7 +209,7 @@ img {
 		.imageInfo__compressed {
 			margin-top: 10px;
 		}
-		
+
 		h4 {
 			padding: 0;
 			margin: 0;
