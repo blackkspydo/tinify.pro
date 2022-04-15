@@ -67,7 +67,7 @@ function App() {
 		}
 		return file.name;
 	};
-	// console.log(blobs);
+	
 
 	const handleImageCompression = async () => {
 		if (blobs) {
@@ -112,8 +112,8 @@ function App() {
 							if (image.file.type === "image/tiff") {
 								toast.error("TIFF files are not supported");
 							}
-							console.log(err.message);
-							console.log("errrrrr");
+							
+							
 							image.status = "error";
 						},
 						maxWidth:
@@ -191,7 +191,7 @@ github: https://github.com/blackkspydo`
 			// 			original: filtered[0].original,
 			// 			compressed: filtered[0].compressed,
 			// 		});
-			// 		console.log("filtered", filtered);
+			
 			// 	});
 			// }, 1000);
 		}
@@ -216,8 +216,8 @@ github: https://github.com/blackkspydo`
 				});
 		}
 	}, [images]);
-	console.log(blobs.length);
-	console.log("controls", controls);
+	
+	
 	const imgHTML = useMemo(() => {
 		return images.map((image, index) => {
 			return (
@@ -225,7 +225,7 @@ github: https://github.com/blackkspydo`
 					<img
 						onClick={() => {
 							setCompare(image);
-							console.log("first");
+							
 						}}
 						src={image.compressed.url}
 						alt={image.compressed.name}
@@ -342,7 +342,7 @@ github: https://github.com/blackkspydo`
 					accept="image/png, image/jpeg, image/webp, image/bmp, image/gif, image/svg+xml"
 					onChange={(e: any) => {
 						const files = Array.from(e.target.files);
-						console.log(files);
+						
 						const fileObj = files.map((file: any) => {
 							return {
 								file: file,
