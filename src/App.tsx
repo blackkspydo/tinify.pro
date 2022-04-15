@@ -148,20 +148,19 @@ function App() {
 		if (images) {
 			zip.file(
 				"readMe.txt",
-				`
-				Thank you for using this tool.
-				Image compressor tool by Blackkspydo \n
-				telegram: https://t.me/blackkspydo \n
-				telegram channel: https://t.me/codenewbie \n
-				Code will be opensourced soon in github \n
-				Will post on telegram channel soon \n
-			`
+				`Thank you for using this tool.
+Image compressor tool by Blackkspydo 
+Code will be opensourced soon in github
+Contact me for any questions or suggestions or if you want to contribute to this project 
+telegram: https://t.me/blackkspydo 
+telegram channel: https://t.me/codenewbie 
+github: https://github.com/blackkspydo`
 			);
 			await images.forEach((image) => {
 				zip.file(image.compressed.name, image.compressed.file);
 			});
 			zip.generateAsync({ type: "blob" }).then((content) => {
-				saveAs(content, "images.zip");
+				saveAs(content, "Compressedimages.zip");
 			});
 		}
 	};
@@ -204,7 +203,6 @@ function App() {
 		}, 200);
 		return () => clearTimeout(timer);
 	}, [controls]);
-
 
 	useEffect(() => {
 		if (images.length > 0) {
@@ -271,11 +269,6 @@ function App() {
 			);
 		});
 	}, [images]);
-
-	const lastmodified = (file: File) => {
-		const date = new Date(file.lastModified);
-		return date.toString();
-	};
 
 	return (
 		<div className="App">
