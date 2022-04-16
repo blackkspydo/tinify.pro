@@ -232,11 +232,11 @@ function ImageCompressor() {
 		}
 	}, [controlsValue]);
 
-	useEffect(() => {
-		window.innerWidth < 980 && setIsTablet(true);
-	});
+	// useEffect(() => {
+	// 	window.innerWidth < 980 && setIsTablet(true);
+	// });
 	// window.innerWidth < 980 && setIsTablet(true);
-
+	console.log(compare.original.name);
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			setControlsValue(controls);
@@ -257,59 +257,91 @@ function ImageCompressor() {
 		}
 	}, [images]);
 
-	const imgHTML = useMemo(() => {
-		return images.map((image, index) => {
-			return (
-				<div className={styles.compressed} key={image.compressed.url}>
-					<div
-						className={styles.compressed__image}
-						onClick={() => {
-							setCompare(image);
-						}}>
-						<img
-							src={image.compressed.url}
-							alt={image.compressed.name}
-						/>
-					</div>
-					<button
-						className={styles.close_button}
-						onClick={() => {
-							toast.error("Deleted");
-							setImages((prevState: ImagesInterface[]) =>
-								prevState.length > 1
-									? prevState.filter(
-											(img) =>
-												img.compressed.url !==
-												image.compressed.url
-									  )
-									: []
-							);
-							images.length > 1
-								? index > 1
-									? compare === image &&
-									  setCompare(images[index - 1])
-									: setCompare(images[index + 1])
-								: setCompare({
-										original: {
-											file: null,
-											name: "",
-											url: "https://picsum.photos/seed/picsum/800/800",
-											size: 0,
-										},
-										compressed: {
-											file: null,
-											name: "",
-											url: "https://picsum.photos/seed/picsum/800/800",
-											size: 0,
-										},
-								  });
-						}}>
-						<RiDeleteBinLine />
-					</button>
+	const imgHTML = images.map((image, index) => {
+		return (
+			<div className={styles.compressed} key={image.compressed.url}>
+				<div
+					className={styles.compressed__image}
+					onClick={() => {
+						setCompare(image);
+					}}>
+					<img
+						src={image.compressed.url}
+						alt={image.compressed.name}
+					/>
 				</div>
-			);
-		});
-	}, [images]);
+				<button
+					className={styles.close_button}
+					onClick={() => {
+						toast.error("Deleted");
+						// images.length > 1
+						// 	? index > 1
+						// 		? compare.original.name === image.original.name && setCompare(images[index - 1])
+						// 		: compare.original.name === image.original.name && setCompare(images[index + 1])
+						// : setCompare({
+						// 		original: {
+						// 			file: null,
+						// 			name: "",
+						// 			url: "https://picsum.photos/seed/picsum/800/800",
+						// 			size: 0,
+						// 		},
+						// 		compressed: {
+						// 			file: null,
+						// 			name: "",
+						// 			url: "https://picsum.photos/seed/picsum/800/800",
+						// 			size: 0,
+						// 		},
+						//   });
+
+						if (images.length > 1) {
+							if (index > 0) {
+								compare.original.name === image.original.name &&
+									setCompare(images[index - 1]);
+								console.log(
+									compare.original.name ===
+										image.original.name
+								);
+								console.log(compare.original.file.name);
+								console.log(compare.original.name);
+								console.log(image.original.name);
+							} else {
+								compare.original.name === image.original.name &&
+									setCompare(images[index + 1]);
+								console.log("seconf");
+							}
+						} else {
+							setCompare({
+								original: {
+									file: null,
+									name: "",
+									url: "https://picsum.photos/seed/picsum/800/800",
+									size: 0,
+								},
+								compressed: {
+									file: null,
+									name: "",
+									url: "https://picsum.photos/seed/picsum/800/800",
+									size: 0,
+								},
+							});
+						}
+
+						setImages((prevState: ImagesInterface[]) =>
+							prevState.length > 1
+								? prevState.filter(
+										(img) =>
+											img.compressed.url !==
+											image.compressed.url
+								  )
+								: []
+						);
+					}}>
+					<RiDeleteBinLine />
+				</button>
+			</div>
+		);
+	});
+	// }, [images]);
 
 	return (
 		<Layout>
