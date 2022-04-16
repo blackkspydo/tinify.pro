@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useLayoutEffect } from "react";
 import Compressor from "compressorjs";
 import { ComparisonSlider } from "react-comparison-slider";
 import styles from "./ImageCompressor.module.scss";
@@ -30,6 +30,7 @@ interface ImagesInterface {
 function ImageCompressor() {
 	const [images, setImages] = useState<ImagesInterface[]>([]);
 	const [blobs, setBlobs] = useState<BlobObjInterface[]>([]);
+	const [isTablet, setIsTablet] = useState(false);
 	const [compare, setCompare] = useState<any>({
 		original: {
 			file: null,
@@ -161,6 +162,7 @@ function ImageCompressor() {
 				`<div style="max-width:400px;
 				height:350px;
 				padding:15px;
+				margin:15px;
 				box-shadow: -1px 0px 9px -1px #b1b1b1bf;
 -webkit-box-shadow: -1px 0px 9px -1px #b1b1b1bf;
 -moz-box-shadow: -1px 0px 9px -1px #b1b1b1bf;
@@ -228,6 +230,12 @@ function ImageCompressor() {
 		}
 	}, [controlsValue]);
 	// console.log(controlsValue);
+
+	useEffect(() => {
+		window.innerWidth < 980 && setIsTablet(true);
+		console.log(window.innerWidth);
+	});
+	// window.innerWidth < 980 && setIsTablet(true);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
@@ -311,73 +319,14 @@ function ImageCompressor() {
 					duration: 1000,
 				}}
 			/>
-			
-			<div
-				id="drop_zone"
-				onDrop={async function (e) {
-					e.preventDefault();
-					e.stopPropagation();
-					const files = await Array.from(e.dataTransfer.files);
-					const fileObj = files.map((file) => {
-						return {
-							file: file,
-							name: file.name,
-							url: URL.createObjectURL(file),
-							size: file.size,
-							status: "pending",
-						};
-					});
-
-					setBlobs((state: any) => [...state, ...fileObj]);
-					setIsHovering(false);
-				}}
-				onDragOver={(e) => {
-					e.preventDefault();
-					e.stopPropagation();
-					setIsHovering(true);
-				}}
-				onDragEnter={(e) => {
-					e.preventDefault();
-					e.stopPropagation();
-					setIsHovering(true);
-				}}
-				onDragLeave={(e) => {
-					e.preventDefault();
-					e.stopPropagation();
-					setIsHovering(false);
-				}}
-				onClick={() => {
-					fileInputRef.current!.click();
-				}}
-				style={{
-					border: "2px dashed #bbb",
-					padding: "50px 30px",
-					textAlign: "center",
-					fontSize: "16px",
-					cursor: "pointer",
-					backgroundColor: isHovering ? "#eee" : "#fff",
-					maxWidth: "600px",
-					maxHeight: "500px",
-					margin: "30px auto",
-					marginTop: "8rem",
-				}}>
-				<p
-					style={{
-						pointerEvents: "none",
-					}}>
-					Drag one or more files to this Drop Zone or Click here to
-					select files
-				</p>
-				<input
-					hidden
-					ref={fileInputRef}
-					multiple
-					type="file"
-					accept="image/png, image/jpeg, image/webp, image/bmp, image/gif, image/svg+xml"
-					onChange={(e: any) => {
-						const files = Array.from(e.target.files);
-
-						const fileObj = files.map((file: any) => {
+			<div className={styles.headerContainer}>
+				<div
+					id="drop_zone"
+					onDrop={async function (e) {
+						e.preventDefault();
+						e.stopPropagation();
+						const files = await Array.from(e.dataTransfer.files);
+						const fileObj = files.map((file) => {
 							return {
 								file: file,
 								name: file.name,
@@ -386,36 +335,100 @@ function ImageCompressor() {
 								status: "pending",
 							};
 						});
+
 						setBlobs((state: any) => [...state, ...fileObj]);
+						setIsHovering(false);
 					}}
-				/>
+					onDragOver={(e) => {
+						e.preventDefault();
+						e.stopPropagation();
+						setIsHovering(true);
+					}}
+					onDragEnter={(e) => {
+						e.preventDefault();
+						e.stopPropagation();
+						setIsHovering(true);
+					}}
+					onDragLeave={(e) => {
+						e.preventDefault();
+						e.stopPropagation();
+						setIsHovering(false);
+					}}
+					onClick={() => {
+						fileInputRef.current!.click();
+					}}
+					style={{
+						border: "4px dashed rgba(200, 200, 200, 0.54)",
+						padding: "55px 35px",
+
+						textAlign: "center",
+						fontSize: "15px",
+						cursor: "pointer",
+						backgroundColor: isHovering ? "#eee" : "#fff",
+						maxWidth: "600px",
+						maxHeight: "200px",
+						margin: "5rem 10px",
+						marginTop: "8rem",
+						color: "#777",
+					}}>
+					<p
+						style={{
+							pointerEvents: "none",
+						}}>
+						Drag one or more files to this Drop Zone or Click here
+						to select files
+					</p>
+					<input
+						hidden
+						ref={fileInputRef}
+						multiple
+						type="file"
+						accept="image/png, image/jpeg, image/webp, image/bmp, image/gif, image/svg+xml"
+						onChange={(e: any) => {
+							const files = Array.from(e.target.files);
+
+							const fileObj = files.map((file: any) => {
+								return {
+									file: file,
+									name: file.name,
+									url: URL.createObjectURL(file),
+									size: file.size,
+									status: "pending",
+								};
+							});
+							setBlobs((state: any) => [...state, ...fileObj]);
+						}}
+					/>
+				</div>
 			</div>
 
 			<div className={styles.imagePreviewContainer}>
 				<div className={styles.thumbnailsContainer}>
-					<h3>Image Thumbnails</h3>
-					<AnimatePresence>
-						<motion.div
-							layout
-							className={styles.thumbnails}
-							style={{
-								justifyContent:
-									images.length === 1
-										? "flex-start"
-										: "space-around",
-							}}>
-							{images.length ? (
-								imgHTML
-							) : (
-								<p
-									style={{
-										gridColumn: "1/3",
-									}}>
-									No images imported
-								</p>
-							)}
-						</motion.div>
-					</AnimatePresence>
+					<div>
+						<h3>Image Thumbnails</h3>
+						<AnimatePresence>
+							<motion.div
+								layout
+								className={styles.thumbnails}
+								style={{
+									justifyContent:
+										images.length === 1
+											? "flex-start"
+											: "space-around",
+								}}>
+								{images.length ? (
+									imgHTML
+								) : (
+									<p
+										style={{
+											gridColumn: "1/3",
+										}}>
+										No images imported
+									</p>
+								)}
+							</motion.div>
+						</AnimatePresence>
+					</div>
 					<div className={styles.ToolsContainer}>
 						<h3>Tools</h3>
 						<form>
@@ -463,7 +476,8 @@ function ImageCompressor() {
 									max={10000}
 									step={50}
 								/>
-								{" px"}
+
+								<div className={styles.px}>px</div>
 							</div>
 							<div className={styles.formGroup}>
 								<label
@@ -487,7 +501,7 @@ function ImageCompressor() {
 									step={50}
 									max={10000}
 								/>
-								{" px"}
+								<div className={styles.px}>px</div>
 							</div>
 							<div className={styles.formGroup}>
 								<label className={styles.bold} htmlFor="type">
@@ -531,47 +545,57 @@ function ImageCompressor() {
 							Click on the thumbnail to view on full size
 						</span>
 					)}
-					<ComparisonSlider
-						defaultValue={50}
-						itemTwo={
-							<div className={styles.afterContainer}>
-								<img
-									src={compare.compressed.url}
-									alt={compare.compressed.name}
-								/>
-								<div className={styles.imageInfo}>after</div>
-							</div>
-						}
-						itemOne={
-							<div className={styles.beforeContainer}>
-								<img
-									src={compare.original.url}
-									alt={compare.original.name}
-								/>
-								<div className={styles.imageInfo}>before</div>
-							</div>
-						}
-						handleAfter={
-							<div
-								className={styles.handleAfter}
-								style={{
-									width: "2px",
-									height: "100%",
-									backgroundColor: "#eee",
-								}}></div>
-						}
-						handleBefore={
-							<div
-								className={styles.handleBefore}
-								style={{
-									width: "2px",
-									height: "100%",
-									backgroundColor: "#eee",
-								}}></div>
-						}
-						aspectRatio={1 / 1}
-						orientation="horizontal"
-					/>
+					<div className={styles.imagePreview__container}>
+						<ComparisonSlider
+							defaultValue={50}
+							itemTwo={
+								<div className={styles.afterContainer}>
+									<img
+										src={compare.compressed.url}
+										alt={compare.compressed.name}
+										height="100%"
+										width="100%"
+									/>
+									<div className={styles.imageInfo}>
+										after
+									</div>
+								</div>
+							}
+							itemOne={
+								<div className={styles.beforeContainer}>
+									<img
+										src={compare.original.url}
+										alt={compare.original.name}
+										height="100%"
+										width="100%"
+									/>
+									<div className={styles.imageInfo}>
+										before
+									</div>
+								</div>
+							}
+							handleAfter={
+								<div
+									className={styles.handleAfter}
+									style={{
+										width: "2px",
+										height: "100%",
+										backgroundColor: "#eee",
+									}}></div>
+							}
+							handleBefore={
+								<div
+									className={styles.handleBefore}
+									style={{
+										width: "2px",
+										height: "100%",
+										backgroundColor: "#eee",
+									}}></div>
+							}
+							aspectRatio={isTablet ? 4 / 3 : 1 / 1}
+							orientation="horizontal"
+						/>
+					</div>
 				</div>
 				<div className={styles.imageInfoContainer}>
 					<div className={styles.imageDetailsHeader}>
@@ -846,7 +870,22 @@ function ImageCompressor() {
 					</div>
 				</div>
 			</div>
-			
+			<div className={styles.howToContainer}>
+				<div className={styles.howTo}>
+					<h2>How To Use</h2>
+					<p>
+						Select an image from your computer or upload one from
+						your computer.
+					</p>
+					<p>
+						The image will be compressed and compressed files will
+						be downloaded.
+					</p>
+					<p>
+						The compressed files will be downloaded as a zip file.
+					</p>
+				</div>
+			</div>
 		</Layout>
 	);
 }
