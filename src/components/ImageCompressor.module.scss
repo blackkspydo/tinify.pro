@@ -1,5 +1,7 @@
+$red : #ca0000;
+
 .headerContainer {
-	background-color: #e50000;
+	background-color: $red;
 	height: 25rem;
 	display: flex;
 	justify-content: center;
@@ -195,11 +197,18 @@ img {
 		padding: 10px min(50px, 5%);
 		position: relative;
 		.imagePreview__small {
-			font-size: 14px;
+			font-size: 16px;
+			text-align: center;
+			font-weight: 600;
 			position: absolute;
-			top: 10px;
-			right: 10px;
-			color: rgb(186, 186, 186);
+			top:50%;
+			right:50%;
+			text-transform: uppercase;
+			transform: translate(50%,-50%);
+			z-index: 100;
+			background-color: rgba(9, 0, 0, 0.362);
+			color: rgb(255, 255, 255);
+			padding: 10px;
 		}
 	}
 	.imageInfoContainer {
@@ -241,7 +250,7 @@ img {
 	}
 }
 .howToContainer {
-	background-color: #e50000;
+	background-color: $red;
 	display: flex;
 	justify-content: flex-start;
 	align-items: flex-start;

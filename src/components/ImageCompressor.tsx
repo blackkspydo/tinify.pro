@@ -542,7 +542,7 @@ function ImageCompressor() {
 					<h3>Image Preview</h3>
 					{!compare.compressed.file && (
 						<span className={styles.imagePreview__small}>
-							Click on the thumbnail to view on full size
+							Click on the thumbnail to view on the canvas
 						</span>
 					)}
 					<div className={styles.imagePreview__container}>

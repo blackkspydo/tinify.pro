@@ -1,13 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Gwendolyn:wght@700&display=swap");
-
+$red: #ca0000;
 .header {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	background-color: #E50000;
+	background-color: $red;
 
 	border-bottom: 0.5px solid #fda8a8;
-	
+
 	padding: 0 5%;
 	.title {
 		font-family: "Gwendolyn";
@@ -39,8 +39,8 @@
 }
 
 .footer {
-	background-color: #e50000;
-border-top: 0.5px solid #fda8a8;
+	background-color: $red;
+	border-top: 0.5px solid #fda8a8;
 	padding: 20px;
 	text-align: center;
 	color: #fff;
