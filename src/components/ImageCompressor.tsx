@@ -327,6 +327,11 @@ function ImageCompressor() {
 								  )
 								: []
 						);
+						setBlobs((state) =>
+							state.filter(
+								(img) => img.file !== image.original.file
+							)
+						);
 					}}>
 					<RiDeleteBinLine />
 				</button>
@@ -909,6 +914,30 @@ function ImageCompressor() {
 						The compressed files will be downloaded as a zip file.
 					</p>
 				</div>
+				<button
+					onClick={(e) => {
+						e.preventDefault();
+						console.log(window.location.href);
+						// add current page to bookmarks firefox
+						// @ts-ignore
+						if (window.sidebar) {
+							// @ts-ignore
+							window.sidebar.addPanel(
+								"https://compress-images.netlify.app/",
+								"Compress Images",
+								"https://compress-images.netlify.app/"
+							);
+						}
+
+						// @ts-ignore
+						chrome.runtime.sendMessage({
+							type: "addBookmark",
+							url: window.location.href,
+							title: document.title,
+						});
+					}}>
+					Add to favorites
+				</button>
 			</div>
 		</Layout>
 	);
