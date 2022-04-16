@@ -152,8 +152,6 @@ function ImageCompressor() {
 	// 		compressed: images[0].compressed,
 	// 	});
 
-	
-
 	const handleImageZip = async () => {
 		const zip = new JSZip();
 		if (images) {
@@ -192,8 +190,12 @@ function ImageCompressor() {
 					}
 				);
 			});
+
 			zip.generateAsync({ type: "blob" }).then((content) => {
-				saveAs(content, "Compressedimages.zip");
+				saveAs(
+					content,
+					`tinify.pro-${new Date().toISOString().slice(0, 10)}.zip`
+				);
 			});
 		}
 	};
@@ -229,11 +231,9 @@ function ImageCompressor() {
 			// }, 1000);
 		}
 	}, [controlsValue]);
-	
 
 	useEffect(() => {
 		window.innerWidth < 980 && setIsTablet(true);
-		
 	});
 	// window.innerWidth < 980 && setIsTablet(true);
 
