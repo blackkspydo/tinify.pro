@@ -152,7 +152,7 @@ function ImageCompressor() {
 	// 		compressed: images[0].compressed,
 	// 	});
 
-	console.log(images);
+	
 
 	const handleImageZip = async () => {
 		const zip = new JSZip();
@@ -229,11 +229,11 @@ function ImageCompressor() {
 			// }, 1000);
 		}
 	}, [controlsValue]);
-	// console.log(controlsValue);
+	
 
 	useEffect(() => {
 		window.innerWidth < 980 && setIsTablet(true);
-		console.log(window.innerWidth);
+		
 	});
 	// window.innerWidth < 980 && setIsTablet(true);
 
