@@ -236,7 +236,7 @@ function ImageCompressor() {
 	// 	window.innerWidth < 980 && setIsTablet(true);
 	// });
 	// window.innerWidth < 980 && setIsTablet(true);
-	console.log(compare.original.name);
+
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			setControlsValue(controls);
@@ -297,17 +297,9 @@ function ImageCompressor() {
 							if (index > 0) {
 								compare.original.name === image.original.name &&
 									setCompare(images[index - 1]);
-								console.log(
-									compare.original.name ===
-										image.original.name
-								);
-								console.log(compare.original.file.name);
-								console.log(compare.original.name);
-								console.log(image.original.name);
 							} else {
 								compare.original.name === image.original.name &&
 									setCompare(images[index + 1]);
-								console.log("seconf");
 							}
 						} else {
 							setCompare({
