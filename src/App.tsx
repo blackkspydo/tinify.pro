@@ -10,7 +10,7 @@ const App = () => {
 				<Route path="/" element={<ImageCompressor />} />\
 				<Route path="about" element={<About />} />
 				<Route path="tools" element={<Tools />} />
-				<Route path="404" element={<NotFound />} />
+				<Route path="notfound" element={<NotFound />} />
 			</Routes>
 		</div>
 	);
