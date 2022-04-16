@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import Layout from "./Layout";
+import { RiDeleteBinLine } from "react-icons/ri";
+
 interface BlobObjInterface {
 	file: File | Blob;
 	name: string;
@@ -54,7 +56,7 @@ function ImageCompressor() {
 		quality: 0.8,
 		type: "auto",
 	});
-	const [isFirstLoad, setIsFirstLoad] = useState<boolean | null>(null);
+
 	const [isHovering, setIsHovering] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -155,16 +157,38 @@ function ImageCompressor() {
 		const zip = new JSZip();
 		if (images) {
 			zip.file(
-				"readMe.txt",
-				`Thank you for using this tool.
-Image compressor tool by Blackkspydo 
-Contact me for any questions or suggestions or if you want to contribute to this project 
-telegram: https://t.me/blackkspydo 
-telegram channel: https://t.me/codenewbie 
-github: https://github.com/blackkspydo`
+				"readMe.html",
+				`<div style="max-width:400px;
+				height:350px;
+				padding:15px;
+				box-shadow: -1px 0px 9px -1px #b1b1b1bf;
+-webkit-box-shadow: -1px 0px 9px -1px #b1b1b1bf;
+-moz-box-shadow: -1px 0px 9px -1px #b1b1b1bf;
+			   letter-spacing:1px;
+				position:absolute; top:50%; left:50%; transform:translate(-50%,-50%)
+				">
+	  <h1 style="font-weight:bold;">Thank you for using
+		<a  target="_blank" href="https://tinify.pro" style="text-decoration : none;color:orange">
+		  tinify.pro
+		</a>
+	  </h1>
+	  <p> Image compressor tool by <a  target="_blank" style="text-decoration : none;color:orange" href=" https://blackkspydo.com">Blackkspydo</a></p> <br>
+	  Contact me for any questions or suggestions or if you want to contribute to this project <br><br>
+	  Telegram: <a  target="_blank" style="text-decoration : none;color:orange" href=" https://t.me/Blackkspydo">@Blackkspydo</a> <br>
+	  Github: <a  target="_blank" target="_blank"  style="text-decoration : none;color:orange" href="https://github.com/blackkspydo"> https://github.com/blackkspydo </a> <br>
+	  Telegram channel: <a target="_blank"  style="text-decoration : none;color:orange" href="https://t.me/codenewbie"  >@codeNewbie</a> <br>
+	
+	</div>`
 			);
+			zip.folder("images");
 			await images.forEach((image) => {
-				zip.file(image.compressed.name, image.compressed.file);
+				zip.file(
+					`images/${image.compressed.name}`,
+					image.compressed.file,
+					{
+						binary: true,
+					}
+				);
 			});
 			zip.generateAsync({ type: "blob" }).then((content) => {
 				saveAs(content, "Compressedimages.zip");
@@ -203,7 +227,7 @@ github: https://github.com/blackkspydo`
 			// }, 1000);
 		}
 	}, [controlsValue]);
-	console.log(controlsValue);
+	// console.log(controlsValue);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
@@ -229,13 +253,16 @@ github: https://github.com/blackkspydo`
 		return images.map((image, index) => {
 			return (
 				<div className={styles.compressed} key={image.compressed.url}>
-					<img
+					<div
+						className={styles.compressed__image}
 						onClick={() => {
 							setCompare(image);
-						}}
-						src={image.compressed.url}
-						alt={image.compressed.name}
-					/>
+						}}>
+						<img
+							src={image.compressed.url}
+							alt={image.compressed.name}
+						/>
+					</div>
 					<button
 						className={styles.close_button}
 						onClick={() => {
@@ -269,7 +296,7 @@ github: https://github.com/blackkspydo`
 										},
 								  });
 						}}>
-						X
+						<RiDeleteBinLine />
 					</button>
 				</div>
 			);
@@ -284,6 +311,7 @@ github: https://github.com/blackkspydo`
 					duration: 1000,
 				}}
 			/>
+			
 			<div
 				id="drop_zone"
 				onDrop={async function (e) {
@@ -431,8 +459,9 @@ github: https://github.com/blackkspydo`
 											maxWidth: Number(e.target.value),
 										});
 									}}
-									min={10}
+									min={50}
 									max={10000}
+									step={50}
 								/>
 								{" px"}
 							</div>
@@ -454,7 +483,8 @@ github: https://github.com/blackkspydo`
 											maxHeight: Number(e.target.value),
 										});
 									}}
-									min={10}
+									min={50}
+									step={50}
 									max={10000}
 								/>
 								{" px"}
@@ -816,6 +846,7 @@ github: https://github.com/blackkspydo`
 					</div>
 				</div>
 			</div>
+			
 		</Layout>
 	);
 }
