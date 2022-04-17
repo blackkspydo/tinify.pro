@@ -1,0 +1,26 @@
+$red: #ca0000;
+
+.toast {
+	width: fit-content;
+	padding: 0.1rem 1rem;
+	background-color: #ffffff;
+	// box-shadow: -1px 0px 9px -1px #b1b1b1bf;
+	p {
+		max-width: 300px;
+        padding: 0;
+	}
+	button {
+		margin-left: auto;
+		margin-right: 0.5rem;
+		padding: 0.3rem 1rem;
+		border-radius: 0.3rem;
+		background-color: $red;
+		border: none;
+		color: #fff;
+		font-weight: 500;
+        letter-spacing: 1px;
+        cursor: pointer;
+        margin-bottom: 10px;
+        font-size: 18px;
+	}
+}

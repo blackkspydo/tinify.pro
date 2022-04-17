@@ -9,6 +9,7 @@ import { saveAs } from "file-saver";
 import Layout from "./Layout";
 import { RiDeleteBinLine } from "react-icons/ri";
 import compareImg from "../static/profile.jpg";
+import InstallBanner from "./InstallBanner";
 interface BlobObjInterface {
 	file: File | Blob;
 	name: string;
@@ -364,34 +365,27 @@ function ImageCompressor() {
 		};
 	}, []);
 	// const installRef = useRef<HTMLButtonElement>(null);
+	const handleInstallButton = async () => {
+		deferredPrompt.prompt();
+		// Wait for the user to respond to the prompt
+		const { outcome } = await deferredPrompt.userChoice;
+		// Optionally, send analytics event with outcome of user choice
+		console.log(`User response to the install prompt: ${outcome}`);
+		// We've used the prompt, and can't use it again, throw it away
+		setDeferredPrompt(null);
+	};
 	const handleInstall = () => {
 		setTimeout(() => {
 			isSupported &&
 				toast(
 					(t) => (
-						<div className={styles.toast}>
-							Install our app on your phone!
-							<button
-								className={styles.install_button}
-								onClick={async () => {
-									toast.dismiss(t.id);
-									deferredPrompt.prompt();
-									// Wait for the user to respond to the prompt
-									const { outcome } =
-										await deferredPrompt.userChoice;
-									// Optionally, send analytics event with outcome of user choice
-									console.log(
-										`User response to the install prompt: ${outcome}`
-									);
-									// We've used the prompt, and can't use it again, throw it away
-									setDeferredPrompt(null);
-								}}>
-								Install
-							</button>
-						</div>
+						<InstallBanner
+							t={t}
+							handleInstallButton={handleInstallButton}
+						/>
 					),
 					{
-						position: "top-center",
+						position: "bottom-right",
 						duration: Infinity,
 					}
 				);

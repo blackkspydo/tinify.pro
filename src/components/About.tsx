@@ -1,11 +1,13 @@
 import React from "react";
 import Layout from "./Layout";
 import styles from "./Header.module.scss";
+
 const About = () => {
 	return (
 		<Layout>
 			<div className={styles.container}>
 				<h1>About</h1>
+
 				<p>
 					Lorem ipsum dolor sit amet consectetur adipisicing elit.
 					Consequatur, quisquam. Lorem ipsum dolor sit amet
