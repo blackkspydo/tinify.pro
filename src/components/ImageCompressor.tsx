@@ -353,12 +353,13 @@ function ImageCompressor() {
 			e.preventDefault();
 			// Stash the event so it can be triggered later.
 			setDeferredPrompt(e);
+			setIsSupported(true);
 		});
 		return () => {
 			window.removeEventListener("beforeinstallprompt", (e) => {
 				e.preventDefault();
 				setDeferredPrompt(e);
-				setIsSupported(true);
+				setIsSupported(false);
 			});
 		};
 	}, []);
