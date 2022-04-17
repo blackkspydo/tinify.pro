@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo, useLayoutEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import Compressor from "compressorjs";
 import { ComparisonSlider } from "react-comparison-slider";
 import styles from "./ImageCompressor.module.scss";
@@ -30,6 +30,7 @@ interface ImagesInterface {
 function ImageCompressor() {
 	const [images, setImages] = useState<ImagesInterface[]>([]);
 	const [blobs, setBlobs] = useState<BlobObjInterface[]>([]);
+	// eslint-disable-next-line
 	const [isTablet, setIsTablet] = useState(false);
 	const [compare, setCompare] = useState<any>({
 		original: {
@@ -198,7 +199,6 @@ function ImageCompressor() {
 				);
 			});
 		}
-		handleInstall();
 	};
 
 	useEffect(() => {
@@ -207,6 +207,7 @@ function ImageCompressor() {
 				toast.success("Images compressed successfully");
 			});
 		}
+		// eslint-disable-next-line
 	}, [blobs]);
 
 	useEffect(() => {
@@ -232,6 +233,7 @@ function ImageCompressor() {
 			// 	});
 			// }, 1000);
 		}
+		// eslint-disable-next-line
 	}, [controlsValue]);
 
 	// useEffect(() => {
@@ -257,6 +259,7 @@ function ImageCompressor() {
 					compressed: filtered[0].compressed,
 				});
 		}
+		// eslint-disable-next-line
 	}, [images]);
 
 	const imgHTML = images.map((image, index) => {
@@ -266,6 +269,7 @@ function ImageCompressor() {
 					className={styles.compressed__image}
 					onClick={() => {
 						setCompare(image);
+						handleInstall();
 					}}>
 					<img
 						src={image.compressed.url}
@@ -341,12 +345,22 @@ function ImageCompressor() {
 		);
 	});
 
-	let deferredPrompt: any;
-	window.addEventListener("beforeinstallprompt", (e) => {
-		e.preventDefault();
-		deferredPrompt = e;
-	});
-
+	const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+	useEffect(() => {
+		window.addEventListener("beforeinstallprompt", (e) => {
+			// Prevent Chrome 67 and earlier from automatically showing the prompt
+			e.preventDefault();
+			// Stash the event so it can be triggered later.
+			setDeferredPrompt(e);
+		});
+		return () => {
+			window.removeEventListener("beforeinstallprompt", (e) => {
+				e.preventDefault();
+				setDeferredPrompt(e);
+			});
+		};
+	}, []);
+	// const installRef = useRef<HTMLButtonElement>(null);
 	const handleInstall = () => {
 		setTimeout(() => {
 			toast(
@@ -355,21 +369,18 @@ function ImageCompressor() {
 						Install our app on your phone!
 						<button
 							className={styles.install_button}
-							onClick={() => {
+							onClick={async () => {
+								toast.dismiss(t.id);
 								deferredPrompt.prompt();
-								deferredPrompt.userChoice
-									.then((choiceResult: any) => {
-										if (
-											choiceResult.outcome === "accepted"
-										) {
-											toast.success("Installed");
-										} else {
-											toast.error("Not installed");
-										}
-									})
-									.then(() => {
-										toast.dismiss(t.id);
-									});
+								// Wait for the user to respond to the prompt
+								const { outcome } =
+									await deferredPrompt.userChoice;
+								// Optionally, send analytics event with outcome of user choice
+								console.log(
+									`User response to the install prompt: ${outcome}`
+								);
+								// We've used the prompt, and can't use it again, throw it away
+								setDeferredPrompt(null);
 							}}>
 							Install
 						</button>
@@ -915,8 +926,7 @@ function ImageCompressor() {
 								<div className={styles.downloadContainer}>
 									<div className={styles.download}>
 										<button
-											className={styles.downloadButton}
-											onClick={handleInstall}>
+											className={styles.downloadButton}>
 											<a
 												target="_blank"
 												rel="noreferrer"
