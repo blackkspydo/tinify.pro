@@ -198,6 +198,7 @@ function ImageCompressor() {
 				);
 			});
 		}
+		handleInstall();
 	};
 
 	useEffect(() => {
@@ -207,6 +208,7 @@ function ImageCompressor() {
 			});
 		}
 	}, [blobs]);
+
 	useEffect(() => {
 		if (blobs.length > 0) {
 			setImages([]);
@@ -338,7 +340,48 @@ function ImageCompressor() {
 			</div>
 		);
 	});
-	// }, [images]);
+
+	let deferredPrompt: any;
+	window.addEventListener("beforeinstallprompt", (e) => {
+		e.preventDefault();
+		deferredPrompt = e;
+	});
+
+	const handleInstall = () => {
+		setTimeout(() => {
+			toast(
+				(t) => (
+					<div className={styles.toast}>
+						Install our app on your phone!
+						<button
+							className={styles.install_button}
+							onClick={() => {
+								deferredPrompt.prompt();
+								deferredPrompt.userChoice
+									.then((choiceResult: any) => {
+										if (
+											choiceResult.outcome === "accepted"
+										) {
+											toast.success("Installed");
+										} else {
+											toast.error("Not installed");
+										}
+									})
+									.then(() => {
+										toast.dismiss(t.id);
+									});
+							}}>
+							Install
+						</button>
+					</div>
+				),
+				{
+					position: "top-center",
+					duration: Infinity,
+				}
+			);
+		}, 5000);
+	};
 
 	return (
 		<Layout>
@@ -872,7 +915,8 @@ function ImageCompressor() {
 								<div className={styles.downloadContainer}>
 									<div className={styles.download}>
 										<button
-											className={styles.downloadButton}>
+											className={styles.downloadButton}
+											onClick={handleInstall}>
 											<a
 												target="_blank"
 												rel="noreferrer"

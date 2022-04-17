@@ -3,6 +3,11 @@ import { Link } from "react-router-dom";
 import styles from "./Header.module.scss";
 
 const Header = () => {
+	// To show Install button
+	
+
+	
+
 	return (
 		<header className={styles.header}>
 			<Link to="/">
