@@ -346,6 +346,7 @@ function ImageCompressor() {
 	});
 
 	const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+	const [isSupported, setIsSupported] = useState<boolean>(false);
 	useEffect(() => {
 		window.addEventListener("beforeinstallprompt", (e) => {
 			// Prevent Chrome 67 and earlier from automatically showing the prompt
@@ -357,43 +358,45 @@ function ImageCompressor() {
 			window.removeEventListener("beforeinstallprompt", (e) => {
 				e.preventDefault();
 				setDeferredPrompt(e);
+				setIsSupported(true);
 			});
 		};
 	}, []);
 	// const installRef = useRef<HTMLButtonElement>(null);
 	const handleInstall = () => {
 		setTimeout(() => {
-			toast(
-				(t) => (
-					<div className={styles.toast}>
-						Install our app on your phone!
-						<button
-							className={styles.install_button}
-							onClick={async () => {
-								toast.dismiss(t.id);
-								deferredPrompt.prompt();
-								// Wait for the user to respond to the prompt
-								const { outcome } =
-									await deferredPrompt.userChoice;
-								// Optionally, send analytics event with outcome of user choice
-								console.log(
-									`User response to the install prompt: ${outcome}`
-								);
-								// We've used the prompt, and can't use it again, throw it away
-								setDeferredPrompt(null);
-							}}>
-							Install
-						</button>
-					</div>
-				),
-				{
-					position: "top-center",
-					duration: Infinity,
-				}
-			);
+			isSupported &&
+				toast(
+					(t) => (
+						<div className={styles.toast}>
+							Install our app on your phone!
+							<button
+								className={styles.install_button}
+								onClick={async () => {
+									toast.dismiss(t.id);
+									deferredPrompt.prompt();
+									// Wait for the user to respond to the prompt
+									const { outcome } =
+										await deferredPrompt.userChoice;
+									// Optionally, send analytics event with outcome of user choice
+									console.log(
+										`User response to the install prompt: ${outcome}`
+									);
+									// We've used the prompt, and can't use it again, throw it away
+									setDeferredPrompt(null);
+								}}>
+								Install
+							</button>
+						</div>
+					),
+					{
+						position: "top-center",
+						duration: Infinity,
+					}
+				);
 		}, 5000);
 	};
-
+	console.log(isSupported);
 	return (
 		<Layout>
 			<Toaster
