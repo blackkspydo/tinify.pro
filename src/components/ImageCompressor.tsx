@@ -8,7 +8,7 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import Layout from "./Layout";
 import { RiDeleteBinLine } from "react-icons/ri";
-
+import compareImg from "../static/profile.jpg";
 interface BlobObjInterface {
 	file: File | Blob;
 	name: string;
@@ -35,13 +35,13 @@ function ImageCompressor() {
 		original: {
 			file: null,
 			name: "",
-			url: "https://picsum.photos/seed/picsum/800/800",
+			url: compareImg,
 			size: 0,
 		},
 		compressed: {
 			file: null,
 			name: "",
-			url: "https://picsum.photos/seed/picsum/800/800",
+			url: compareImg,
 			size: 0,
 		},
 	});
