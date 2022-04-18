@@ -174,7 +174,7 @@ function ImageCompressor() {
 					});
 			});
 		}
-		setIsFirst(1);
+		setIsFirst(isFirst + 1);
 	};
 	// images.length >= 1 &&
 	// 	!compare.original.file &&
