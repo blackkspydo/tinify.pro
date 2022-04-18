@@ -356,13 +356,13 @@ function ImageCompressor() {
 								original: {
 									file: null,
 									name: "",
-									url: "https://picsum.photos/seed/picsum/800/800",
+									url: compareImg,
 									size: 0,
 								},
 								compressed: {
 									file: null,
 									name: "",
-									url: "https://picsum.photos/seed/picsum/800/800",
+									url: compareImg,
 									size: 0,
 								},
 							});
