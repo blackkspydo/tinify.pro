@@ -11,6 +11,7 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import compareImg from "../static/profile.jpg";
 import InstallBanner from "./InstallBanner";
 import ReactGA from "react-ga4";
+import HowTo from "./HowTo";
 interface BlobObjInterface {
 	file: File | Blob;
 	name: string;
@@ -54,6 +55,15 @@ function ImageCompressor() {
 			category: "Button",
 			action: "zip download",
 			label: "Zip download",
+		});
+	};
+	// send app install analytics
+	const ANALYTICS_appInstall = (outcome: any) => {
+		ReactGA.event({
+			category: "Button",
+			action: "app install",
+			label: "App install",
+			value: outcome,
 		});
 	};
 
@@ -415,6 +425,7 @@ function ImageCompressor() {
 		// Optionally, send analytics event with outcome of user choice
 		console.log(`User response to the install prompt: ${outcome}`);
 		// We've used the prompt, and can't use it again, throw it away
+		ANALYTICS_appInstall(outcome);
 		setDeferredPrompt(null);
 	};
 	const handleInstall = () => {
@@ -1013,17 +1024,7 @@ function ImageCompressor() {
 			<div className={styles.howToContainer}>
 				<div className={styles.howTo}>
 					<h2>How To Use</h2>
-					<p>
-						Select an image from your computer or upload one from
-						your computer.
-					</p>
-					<p>
-						The image will be compressed and compressed files will
-						be downloaded.
-					</p>
-					<p>
-						The compressed files will be downloaded as a zip file.
-					</p>
+					<HowTo />
 				</div>
 			</div>
 		</Layout>
