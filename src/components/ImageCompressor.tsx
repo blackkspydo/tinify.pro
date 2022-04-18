@@ -443,7 +443,7 @@ function ImageCompressor() {
 						duration: Infinity,
 					}
 				);
-		}, 10000);
+		}, 5000);
 	};
 	useEffect(() => {
 		userTried === 1 && handleInstall();
