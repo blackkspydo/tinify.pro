@@ -10,6 +10,7 @@ import Layout from "./Layout";
 import { RiDeleteBinLine } from "react-icons/ri";
 import compareImg from "../static/profile.jpg";
 import InstallBanner from "./InstallBanner";
+import ReactGA from "react-ga4";
 interface BlobObjInterface {
 	file: File | Blob;
 	name: string;
@@ -29,6 +30,33 @@ interface ImagesInterface {
 	compressed: image;
 }
 function ImageCompressor() {
+	// analytics
+
+	// send button click analytics
+	const ANALYTICS_importedImage = () => {
+		ReactGA.event({
+			category: "Button",
+			action: "imported_image",
+			label: "imported",
+		});
+	};
+	// send download analytics
+	const ANALYTICS_singleDownload = () => {
+		ReactGA.event({
+			category: "Button",
+			action: "single image download",
+			label: "Single image download",
+		});
+	};
+	// send download analytics
+	const ANALYTICS_zipDownload = () => {
+		ReactGA.event({
+			category: "Button",
+			action: "zip download",
+			label: "Zip download",
+		});
+	};
+
 	const [images, setImages] = useState<ImagesInterface[]>([]);
 	const [blobs, setBlobs] = useState<BlobObjInterface[]>([]);
 	// eslint-disable-next-line
@@ -211,6 +239,7 @@ function ImageCompressor() {
 				);
 			});
 		}
+		ANALYTICS_zipDownload();
 		setUserTried((state) => state + 1);
 	};
 
@@ -256,7 +285,7 @@ function ImageCompressor() {
 		window.innerWidth < 500 && setIsMobile(true) && setIsTablet(false);
 		window.innerWidth > 500 && setIsMobile(false);
 	});
-	console.log(isTablet);
+	// console.log(isTablet);
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			setControlsValue(controls);
@@ -361,7 +390,7 @@ function ImageCompressor() {
 	});
 
 	const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-	const [isSupported, setIsSupported] = useState<boolean>(true);
+	const [isSupported, setIsSupported] = useState<boolean>(false);
 	useEffect(() => {
 		window.addEventListener("beforeinstallprompt", (e) => {
 			// Prevent Chrome 67 and earlier from automatically showing the prompt
@@ -437,6 +466,7 @@ function ImageCompressor() {
 
 						setBlobs((state: any) => [...state, ...fileObj]);
 						setIsHovering(false);
+						ANALYTICS_importedImage();
 					}}
 					onDragOver={(e) => {
 						e.preventDefault();
@@ -484,6 +514,7 @@ function ImageCompressor() {
 						type="file"
 						accept="image/png, image/jpeg, image/webp, image/bmp, image/gif, image/svg+xml"
 						onChange={(e: any) => {
+							ANALYTICS_importedImage();
 							const files = Array.from(e.target.files);
 
 							const fileObj = files.map((file: any) => {
@@ -947,7 +978,10 @@ function ImageCompressor() {
 											href={compare.compressed.url}
 											download={
 												compare.compressed.file.name
-											}>
+											}
+											onClick={() => {
+												ANALYTICS_singleDownload();
+											}}>
 											<button
 												className={
 													styles.downloadButton
