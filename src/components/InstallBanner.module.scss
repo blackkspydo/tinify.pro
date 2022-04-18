@@ -4,6 +4,7 @@ $red: #ca0000;
 	width: fit-content;
 	padding: 0.1rem 1rem;
 	background-color: #ffffff;
+    position: relative;
 	// box-shadow: -1px 0px 9px -1px #b1b1b1bf;
 	p {
 		max-width: 300px;
@@ -23,4 +24,16 @@ $red: #ca0000;
         margin-bottom: 10px;
         font-size: 18px;
 	}
+    .closeButton{
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        padding: 0.3rem;
+        cursor: pointer;
+        color: #ca0000;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+
+    }
 }

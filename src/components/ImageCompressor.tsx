@@ -33,6 +33,7 @@ function ImageCompressor() {
 	const [blobs, setBlobs] = useState<BlobObjInterface[]>([]);
 	// eslint-disable-next-line
 	const [isTablet, setIsTablet] = useState(false);
+	const [isMobile, setIsMobile] = useState(false);
 	const [compare, setCompare] = useState<any>({
 		original: {
 			file: null,
@@ -115,9 +116,7 @@ function ImageCompressor() {
 							image.status = "done";
 						},
 						error(err) {
-							if (image.file.type === "image/tiff") {
-								toast.error("TIFF files are not supported");
-							}
+							toast.error(`${image.name} failed to compress`);
 
 							image.status = "error";
 						},
@@ -200,6 +199,7 @@ function ImageCompressor() {
 				);
 			});
 		}
+		handleInstall();
 	};
 
 	useEffect(() => {
@@ -236,11 +236,14 @@ function ImageCompressor() {
 		}
 		// eslint-disable-next-line
 	}, [controlsValue]);
-
-	// useEffect(() => {
-	// 	window.innerWidth < 980 && setIsTablet(true);
-	// });
-	// window.innerWidth < 980 && setIsTablet(true);
+	
+	// eslint-disable-next-line
+	useEffect(() => {
+		window.innerWidth < 980 && setIsTablet(true);
+		window.innerWidth > 980 && setIsTablet(false);
+		window.innerWidth < 600 && setIsMobile(true);
+		window.innerWidth > 600 && setIsMobile(false);
+	});
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
@@ -270,7 +273,6 @@ function ImageCompressor() {
 					className={styles.compressed__image}
 					onClick={() => {
 						setCompare(image);
-						handleInstall();
 					}}>
 					<img
 						src={image.compressed.url}
@@ -347,7 +349,7 @@ function ImageCompressor() {
 	});
 
 	const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-	const [isSupported, setIsSupported] = useState<boolean>(false);
+	const [isSupported, setIsSupported] = useState<boolean>(true);
 	useEffect(() => {
 		window.addEventListener("beforeinstallprompt", (e) => {
 			// Prevent Chrome 67 and earlier from automatically showing the prompt
@@ -385,11 +387,11 @@ function ImageCompressor() {
 						/>
 					),
 					{
-						position: "bottom-right",
+						position: isMobile ? "bottom-center" : "bottom-right",
 						duration: Infinity,
 					}
 				);
-		}, 5000);
+		}, 15000);
 	};
 	console.log(isSupported);
 	return (
@@ -924,7 +926,10 @@ function ImageCompressor() {
 								<div className={styles.downloadContainer}>
 									<div className={styles.download}>
 										<button
-											className={styles.downloadButton}>
+											className={styles.downloadButton}
+											onClick={() => {
+												handleInstall();
+											}}>
 											<a
 												target="_blank"
 												rel="noreferrer"

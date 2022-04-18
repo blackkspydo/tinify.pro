@@ -1,6 +1,7 @@
 import styles from "./InstallBanner.module.scss";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
+import { MdClose } from "react-icons/md";
 const InstallBanner = ({ handleInstallButton, t }: any) => {
 	return (
 		<div className={styles.toast}>
@@ -23,6 +24,13 @@ const InstallBanner = ({ handleInstallButton, t }: any) => {
 				}}>
 				install
 			</motion.button>
+			<div
+				className={styles.closeButton}
+				onClick={() => {
+					toast.dismiss(t.id);
+				}}>
+				<MdClose />
+			</div>
 		</div>
 	);
 };
