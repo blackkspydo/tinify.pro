@@ -78,7 +78,7 @@ function ImageCompressor() {
 
 	const handleImageCompression = async () => {
 		if (blobs) {
-			await blobs.forEach((image) => {
+			await blobs.sort().forEach((image) => {
 				image.status === "pending" &&
 					new Compressor(image.file, {
 						quality:
