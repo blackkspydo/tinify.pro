@@ -34,6 +34,7 @@ function ImageCompressor() {
 	// eslint-disable-next-line
 	const [isTablet, setIsTablet] = useState(false);
 	const [isMobile, setIsMobile] = useState(false);
+	const [isFirst, setIsFirst] = useState(0);
 	const [compare, setCompare] = useState<any>({
 		original: {
 			file: null,
@@ -145,6 +146,7 @@ function ImageCompressor() {
 					});
 			});
 		}
+		setIsFirst(1);
 	};
 	// images.length >= 1 &&
 	// 	!compare.original.file &&
@@ -152,6 +154,16 @@ function ImageCompressor() {
 	// 		original: images[0].original,
 	// 		compressed: images[0].compressed,
 	// 	});
+	useEffect(() => {
+		if (images.length >= 1) {
+			isFirst === 1 &&
+				setCompare({
+					original: images[0].original,
+					compressed: images[0].compressed,
+				});
+		}
+	}, [images, isFirst]);
+
 	const [userTried, setUserTried] = useState(0);
 	const handleImageZip = async () => {
 		const zip = new JSZip();
