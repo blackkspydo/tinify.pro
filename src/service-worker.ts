@@ -79,29 +79,13 @@ self.addEventListener("message", (event) => {
 });
 
 // Any other custom service worker logic can go here.
+
+// make service worker network first and then fallback to cache
+
 self.addEventListener("fetch", (event) => {
-	console.log("[Service Worker] Fetching something...");
-	//@ts-ignore
-	event.respondWith(async () => {
-		try {
-			const response = await fetch(event.request);
-			return response;
-		} catch (error) {
+	event.respondWith(
+		fetch(event.request).catch(() => {
 			return caches.match(event.request);
-		}
-	});
+		}) as Response | Promise<Response>
+	);
 });
-
-// try {
-// 	const response = await fetch(event.request);
-// 	return response;
-// } catch (error) {
-// 	return caches.match(event.request);
-// }
-
-//   try {
-//     return await fetch(event.request);
-//   } catch (err) {
-//     return caches.match(event.request);
-//   }
-// }());
