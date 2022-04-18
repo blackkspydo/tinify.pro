@@ -1,0 +1,147 @@
+.index {
+	min-width: max(8%, 60px);
+	min-height: 3.33em;
+
+	// height: 60px;
+	overflow: visible;
+	position: relative;
+	span {
+		display: block;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+	}
+	img {
+		width: 100%;
+		height: 100%;
+		min-width: 3.33em;
+		min-height: 3.33em;
+	}
+}
+
+.container {
+	max-width: 1000px;
+	margin: 0 auto;
+}
+.howto__item__content {
+	font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+	font-weight: 500;
+}
+.howto__item:nth-child(odd) .text {
+	display: flex;
+	align-items: flex-start;
+	column-gap: 1rem;
+	justify-content: flex-start;
+	.index {
+		order: 0;
+	}
+}
+.howto__item:nth-child(even) .text {
+	display: flex;
+	align-items: center;
+	column-gap: 1rem;
+	text-align: end;
+	justify-content: flex-end;
+	.index {
+		order: 1;
+	}
+}
+.howto__item {
+	margin-top: 2rem;
+}
+.howto__item:nth-child(1) {
+	.howto__item__img {
+		margin-top: 10px;
+		max-width: 400px;
+		margin: 10px max(1rem, 7vw);
+
+		img {
+			width: 100%;
+			height: 100%;
+		}
+	}
+}
+.howto__item:nth-child(2) {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	justify-content: space-between;
+	.howto__item__img {
+		margin-top: 10px;
+		width: auto;
+		height: 230px;
+		// min-width: 340px;
+		margin: 10px max(1rem, 7vw);
+		right: 0;
+		img {
+			object-fit: contain;
+			width: 100%;
+			height: 100%;
+		}
+	}
+}
+.howto__item:nth-child(3) {
+	.howto__item__img {
+		margin-top: 1rem;
+		max-width: 500px;
+		margin: 10px max(1rem, 7vw);
+
+		img {
+			width: 100%;
+			height: 100%;
+		}
+	}
+}
+.howto__item:nth-child(4) {
+	.howto__item__img {
+		margin-top: 10px;
+		max-width: 300px;
+		margin: 10px max(1rem, 7vw);
+
+		img {
+			width: 100%;
+			height: 100%;
+		}
+	}
+}
+.howto__item:nth-child(5) {
+	.howto__item__img {
+		margin-top: 10px;
+		max-width: 300px;
+		margin: 10px max(1rem, 7vw);
+
+		img {
+			width: 100%;
+			height: 100%;
+		}
+	}
+}
+.flex {
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	justify-content: center;
+	padding: 10px;
+	flex-wrap: wrap;
+	row-gap: 1.5rem;
+    .options{
+        font-size: 1.3rem;
+        font-weight: 500;
+    }
+}
+.tools {
+	max-width: 400px;
+	.tools__item {
+		margin: 0 10px 10px 10px;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+
+		.tools__item__title {
+			font-size: clamp(1rem, 2.5vw, 1.3rem);
+			font-weight: 600;
+		}
+	}
+}

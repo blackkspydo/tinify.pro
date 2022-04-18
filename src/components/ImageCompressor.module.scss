@@ -1,4 +1,4 @@
-$red : #ca0000;
+$red: #ca0000;
 
 .headerContainer {
 	background-color: $red;
@@ -109,7 +109,6 @@ img {
 		margin-bottom: 10px;
 		position: relative;
 	}
-	
 
 	input[type="number"] {
 		width: 70px;
@@ -135,13 +134,13 @@ img {
 		width: 100%;
 		border: 1px solid rgb(238, 238, 238);
 		padding: 10px;
-		.px{
+		.px {
 			position: absolute;
 			top: 7px;
 			right: 0;
 			color: #303030;
 		}
-			
+
 		label {
 			width: 140px;
 		}
@@ -201,10 +200,10 @@ img {
 			text-align: center;
 			font-weight: 600;
 			position: absolute;
-			top:50%;
-			right:50%;
+			top: 50%;
+			right: 50%;
 			text-transform: uppercase;
-			transform: translate(50%,-50%);
+			transform: translate(50%, -50%);
 			z-index: 100;
 			background-color: rgba(9, 0, 0, 0.362);
 			color: rgb(255, 255, 255);
@@ -251,10 +250,8 @@ img {
 }
 .howToContainer {
 	background-color: $red;
-	display: flex;
-	justify-content: flex-start;
-	align-items: flex-start;
-	padding: 50px 15%;
+
+	padding: 5%;
 	margin: 8rem auto 0;
 	min-height: 40rem;
 	.howTo {
@@ -266,7 +263,7 @@ img {
 	}
 }
 @media screen and (min-width: 980px) {
-	.px{
+	.px {
 		left: 13.5rem;
 	}
 }
@@ -283,13 +280,12 @@ img {
 			grid-column: 1/3;
 			grid-row: 1/2;
 			display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		.thumbnails {
-			// width: 100px;
-			height: 200px!important;
-		
-		}
+			flex-direction: row;
+			justify-content: space-between;
+			.thumbnails {
+				// width: 100px;
+				height: 200px !important;
+			}
 		}
 		.imagePreview {
 			grid-column: 1/3;
@@ -308,16 +304,15 @@ img {
 @media screen and (max-width: 675px) {
 	.imagePreviewContainer {
 		grid-template-columns: 1fr;
-		grid-template-rows: repeat(auto-fit,300px);
+		grid-template-rows: repeat(auto-fit, 300px);
 		padding: 10px;
 		height: unset;
 
 		.thumbnailsContainer {
 			grid-column: 1;
 			grid-row: unset;
-			
 		}
-		
+
 		.imagePreview {
 			grid-column: unset;
 			grid-row: unset;
@@ -339,20 +334,18 @@ img {
 @media screen and (max-width: 500px) {
 	.thumbnails {
 		width: 100px;
-		height: 200px!important;
+		height: 200px !important;
 		overflow-y: scroll;
 	}
-	.thumbnailsContainer{
+	.thumbnailsContainer {
 		.select {
-			width: 80px!important;
-
+			width: 80px !important;
 		}
 	}
-	.imagePreview{
+	.imagePreview {
 		margin-top: 10px;
-	
 	}
-	.imageInfoContainer{
+	.imageInfoContainer {
 		margin-top: 10px;
 	}
 	label {
