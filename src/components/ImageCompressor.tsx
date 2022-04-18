@@ -152,7 +152,7 @@ function ImageCompressor() {
 	// 		original: images[0].original,
 	// 		compressed: images[0].compressed,
 	// 	});
-	const [userTried, setUserTried] = useState(false);
+	const [userTried, setUserTried] = useState(0);
 	const handleImageZip = async () => {
 		const zip = new JSZip();
 		if (images) {
@@ -199,7 +199,7 @@ function ImageCompressor() {
 				);
 			});
 		}
-		setUserTried(true);
+		setUserTried((state) => state + 1);
 	};
 
 	useEffect(() => {
@@ -239,12 +239,12 @@ function ImageCompressor() {
 
 	// eslint-disable-next-line
 	useEffect(() => {
-		window.innerWidth < 980 && setIsTablet(true);
+		window.innerWidth < 980 && window.innerWidth > 500 && setIsTablet(true);
 		window.innerWidth > 980 && setIsTablet(false);
 		window.innerWidth < 500 && setIsMobile(true) && setIsTablet(false);
-		window.innerWidth > 500 && setIsMobile(false) ;
+		window.innerWidth > 500 && setIsMobile(false);
 	});
-
+	console.log(isTablet);
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			setControlsValue(controls);
@@ -394,7 +394,7 @@ function ImageCompressor() {
 		}, 10000);
 	};
 	useEffect(() => {
-		userTried && handleInstall();
+		userTried === 1 && handleInstall();
 		// eslint-disable-next-line
 	}, [userTried]);
 
@@ -929,21 +929,25 @@ function ImageCompressor() {
 								</div>
 								<div className={styles.downloadContainer}>
 									<div className={styles.download}>
-										<button
-											className={styles.downloadButton}
-											onClick={() => {
-												handleInstall();
-											}}>
-											<a
-												target="_blank"
-												rel="noreferrer"
-												href={compare.compressed.url}
-												download={
-													compare.compressed.file.name
-												}>
+										<a
+											target="_blank"
+											rel="noreferrer"
+											href={compare.compressed.url}
+											download={
+												compare.compressed.file.name
+											}>
+											<button
+												className={
+													styles.downloadButton
+												}
+												onClick={() => {
+													setUserTried(
+														(state) => state + 1
+													);
+												}}>
 												Download Current
-											</a>
-										</button>
+											</button>
+										</a>
 									</div>
 									<div className={styles.download}>
 										<button
