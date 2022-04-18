@@ -260,6 +260,11 @@ img {
 		color: #fff;
 		font-weight: 500;
 		margin-bottom: 10px;
+		h2{
+			font-size: clamp(2.5rem, 2.5vw, 3.5rem);
+			color: #fff;
+			font-weight: 500;
+		}
 	}
 }
 @media screen and (min-width: 980px) {

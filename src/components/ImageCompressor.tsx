@@ -1023,7 +1023,7 @@ function ImageCompressor() {
 			</div>
 			<div className={styles.howToContainer}>
 				<div className={styles.howTo}>
-					<h2>How To Use</h2>
+					<h2>How To Use:</h2>
 					<HowTo />
 				</div>
 			</div>

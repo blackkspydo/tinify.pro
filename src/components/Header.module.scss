@@ -57,3 +57,58 @@ $red: #ca0000;
 	padding: 0 5%;
 	min-height: calc(100vh - 15rem);
 }
+
+// tool
+
+.form {
+	form {
+		display: flex;
+		flex-direction: column;
+		max-width: 400px;
+		input {
+			margin-bottom: 10px;
+			width: 100%;
+			padding: 10px;
+			border: 1px solid #ccc;
+			border-radius: 5px;
+			&:focus {
+				outline: none;
+				border: 1px solid #ca0000;
+			}
+		}
+		textarea {
+			margin-bottom: 10px;
+			width: 100%;
+			height: 250px;
+			padding: 10px;
+			resize: none;
+			border: 1px solid #ccc;
+			border-radius: 5px;
+			&:focus {
+				outline: none;
+				border: 1px solid #ca0000;
+			}
+		}
+		button{
+			margin-top: 10px;
+			width: 100%;
+			height: 40px;
+			background-color: rgb(18, 146, 35);
+			border: none;
+			color: #fff;
+			font-size: 1rem;
+			text-align: center;
+			cursor: pointer;
+			font-weight: 500;
+			transition: all 0.3s ease;
+			a {
+				color: #fff;
+				text-decoration: none;
+				font-weight: 500;
+			}
+			&:hover {
+				background-color: rgb(15, 124, 30);
+			}
+		}
+	}
+}
