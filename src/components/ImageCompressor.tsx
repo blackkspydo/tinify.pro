@@ -152,7 +152,7 @@ function ImageCompressor() {
 	// 		original: images[0].original,
 	// 		compressed: images[0].compressed,
 	// 	});
-
+	const [userTried, setUserTried] = useState(false);
 	const handleImageZip = async () => {
 		const zip = new JSZip();
 		if (images) {
@@ -199,7 +199,7 @@ function ImageCompressor() {
 				);
 			});
 		}
-		handleInstall();
+		setUserTried(true);
 	};
 
 	useEffect(() => {
@@ -236,13 +236,13 @@ function ImageCompressor() {
 		}
 		// eslint-disable-next-line
 	}, [controlsValue]);
-	
+
 	// eslint-disable-next-line
 	useEffect(() => {
 		window.innerWidth < 980 && setIsTablet(true);
 		window.innerWidth > 980 && setIsTablet(false);
-		window.innerWidth < 600 && setIsMobile(true);
-		window.innerWidth > 600 && setIsMobile(false);
+		window.innerWidth < 500 && setIsMobile(true) && setIsTablet(false);
+		window.innerWidth > 500 && setIsMobile(false) ;
 	});
 
 	useEffect(() => {
@@ -391,9 +391,13 @@ function ImageCompressor() {
 						duration: Infinity,
 					}
 				);
-		}, 15000);
+		}, 10000);
 	};
-	console.log(isSupported);
+	useEffect(() => {
+		userTried && handleInstall();
+		// eslint-disable-next-line
+	}, [userTried]);
+
 	return (
 		<Layout>
 			<Toaster
