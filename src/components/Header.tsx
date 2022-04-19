@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import styles from "./Header.module.scss";
-
+import logo from "../static/logo.svg";
 const Header = () => {
 	// To show Install button
 	
@@ -11,7 +11,10 @@ const Header = () => {
 	return (
 		<header className={styles.header}>
 			<Link to="/">
-				<h1 className={styles.title}>Tinify.pro</h1>
+				{/* <h1 className={styles.title}>Tinify.pro</h1> */}
+				<div className={styles.logo}>
+					<img src={logo} alt="" />
+				</div>
 			</Link>
 			<nav>
 				<ul>

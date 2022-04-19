@@ -8,7 +8,12 @@ $red: #ca0000;
 
 	border-bottom: 0.5px solid #fda8a8;
 
-	padding: 0 5%;
+	padding: 1rem 5%;
+	.logo {
+		max-width: 200px;
+		min-width: 180px;
+		padding-top: 10px;
+	}
 	.title {
 		font-family: "Gwendolyn";
 		font-size: 3rem;
@@ -89,7 +94,7 @@ $red: #ca0000;
 				border: 1px solid #ca0000;
 			}
 		}
-		button{
+		button {
 			margin-top: 10px;
 			width: 100%;
 			height: 40px;
