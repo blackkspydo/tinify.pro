@@ -9,56 +9,56 @@ const About = () => {
 				<h1>About</h1>
 
 				<p>
-					Lorem ipsum dolor sit amet consectetur adipisicing elit.
-					Consequatur, quisquam. Lorem ipsum dolor sit amet
-					consectetur adipisicing elit. Tenetur earum repellat
-					deleniti vel dicta aliquam qui nihil voluptas cupiditate,
-					nobis optio dolor labore ullam quaerat temporibus possimus
-					atque soluta voluptatem! Esse, molestiae, deleniti voluptate
-					inventore reiciendis laborum dolor accusantium explicabo
-					sed, assumenda quia saepe. Ex exercitationem tempore iure,
-					molestias commodi sequi laboriosam ducimus nulla libero
-					saepe animi nostrum voluptas minus, itaque ullam alias nisi
-					labore hic modi autem rem quis, delectus maxime doloribus!
-					Unde molestias quia culpa ducimus fuga deserunt beatae
-					adipisci? Laboriosam quis beatae quo tenetur nihil odio nisi
-					animi omnis tempora. Fuga voluptas in minus vitae itaque.
-					Aliquid.
+					Tinify.pro is a free online image compression tool. It
+					supports different image formats and compression rates. Here
+					are some notable features:
 				</p>
-				<p>
-					Lorem ipsum dolor sit amet consectetur adipisicing elit.
-					Consequatur, quisquam. Lorem ipsum dolor sit amet
-					consectetur adipisicing elit. Tenetur earum repellat
-					deleniti vel dicta aliquam qui nihil voluptas cupiditate,
-					nobis optio dolor labore ullam quaerat temporibus possimus
-					atque soluta voluptatem! Esse, molestiae, deleniti voluptate
-					inventore reiciendis laborum dolor accusantium explicabo
-					sed, assumenda quia saepe. Ex exercitationem tempore iure,
-					molestias commodi sequi laboriosam ducimus nulla libero
-					saepe animi nostrum voluptas minus, itaque ullam alias nisi
-					labore hic modi autem rem quis, delectus maxime doloribus!
-					Unde molestias quia culpa ducimus fuga deserunt beatae
-					adipisci? Laboriosam quis beatae quo tenetur nihil odio nisi
-					animi omnis tempora. Fuga voluptas in minus vitae itaque.
-					Aliquid.
-				</p>
-				<p>
-					Lorem ipsum dolor sit amet consectetur adipisicing elit.
-					Consequatur, quisquam. Lorem ipsum dolor sit amet
-					consectetur adipisicing elit. Tenetur earum repellat
-					deleniti vel dicta aliquam qui nihil voluptas cupiditate,
-					nobis optio dolor labore ullam quaerat temporibus possimus
-					atque soluta voluptatem! Esse, molestiae, deleniti voluptate
-					inventore reiciendis laborum dolor accusantium explicabo
-					sed, assumenda quia saepe. Ex exercitationem tempore iure,
-					molestias commodi sequi laboriosam ducimus nulla libero
-					saepe animi nostrum voluptas minus, itaque ullam alias nisi
-					labore hic modi autem rem quis, delectus maxime doloribus!
-					Unde molestias quia culpa ducimus fuga deserunt beatae
-					adipisci? Laboriosam quis beatae quo tenetur nihil odio nisi
-					animi omnis tempora. Fuga voluptas in minus vitae itaque.
-					Aliquid.
-				</p>
+				<ul>
+					<li>
+						It supports client side compression (means extremely
+						secure)
+					</li>
+					<li>
+						There is no limit in number of files you can compress
+					</li>
+					<li>
+						YES, you can compress multiple files at once (guess what
+						there is no limit either, You can throw as many files
+						your device can handle)(I don't recommend more than 100
+						at once, might freeze your device because of RAM
+						overload)
+					</li>
+					<li>
+						You have two download options, downloading a single file
+						or download all compressed files as once as a zip.
+					</li>
+					<li>
+						It supports different formats (jpg,png,webp,gif,svg+xml)
+					</li>
+					<li>
+						It supports inter-format conversions like jpg{" -> "}
+						png, png{" -> "}jpg, jpg,png{" -> "}webp.
+					</li>
+					<li>
+						It supports different compression rates (0.6-0.8 is
+						recommended)
+					</li>
+					<li>
+						It supports different image sizes (up to 50MB
+						recommended)
+					</li>
+					<li>
+						It supports resizing images to different resolutions.
+					</li>
+					<li>
+						This tool is made with React as PWA and is client side
+						processing, which means even if you don't have network
+						connection you can make it work.
+					</li>
+					<li>
+						You can install it natively in to your device as PWA.
+					</li>
+				</ul>
 			</div>
 		</Layout>
 	);
