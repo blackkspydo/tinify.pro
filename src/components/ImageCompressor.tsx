@@ -334,25 +334,6 @@ function ImageCompressor() {
 					className={styles.close_button}
 					onClick={() => {
 						toast.error("Deleted");
-						// images.length > 1
-						// 	? index > 1
-						// 		? compare.original.name === image.original.name && setCompare(images[index - 1])
-						// 		: compare.original.name === image.original.name && setCompare(images[index + 1])
-						// : setCompare({
-						// 		original: {
-						// 			file: null,
-						// 			name: "",
-						// 			url: "https://picsum.photos/seed/picsum/800/800",
-						// 			size: 0,
-						// 		},
-						// 		compressed: {
-						// 			file: null,
-						// 			name: "",
-						// 			url: "https://picsum.photos/seed/picsum/800/800",
-						// 			size: 0,
-						// 		},
-						//   });
-
 						if (images.length > 1) {
 							if (index > 0) {
 								compare.original.name === image.original.name &&
